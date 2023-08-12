@@ -1,0 +1,20 @@
+{
+    "name": "komodo/interlace",
+    "description": "Komodo Object Relational Mapper",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Komodo\\Interlace\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jhonnata Nascimento da Paixão",
+            "email": "114832000+jhownpaixao@users.noreply.github.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "komodo/logger": "dev-main"
+    }
+}

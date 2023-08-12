@@ -1,0 +1,107 @@
+{
+  "php.version": "v8.1",
+  "phpcs.standard": "PSR2",
+  "phpfmt.psr2": true,
+  "phpfmt.indent_with_space": 4,
+  "php-docblocker.alignParams": true,
+  "files.eol": "\n",
+  "better-comments.tags": [
+    {
+      "tag": "!",
+      "color": "#FF2D00",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "?",
+      "color": "#24EFC8",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "//",
+      "color": "#474747",
+      "strikethrough": true,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "todo",
+      "color": "#FF8C00",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "*",
+      "color": "#98C379",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "#",
+      "color": "#FF8C00",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    }
+  ],
+  "phpdoc-generator.constructorWithType": "void",
+  "phpdoc-generator.returnUndefinedType": "mixed",
+  "fileHeaderComment.parameter": {
+    "*": {
+      "commentbegin": "/*",
+      "commentseparator": "|-----------------------------------------------------------------------------",
+      "commentprefix": "|",
+      "commentend": "|*/",
+      "lead": "Jhonnata Paixão (Líder de Projeto)",
+      "project": "Komodo Interlace"
+    },
+    "CommentTitles": {
+      "commentbegin": "/*",
+      "commentseparator": "|-----------------------------------------------------------------------------",
+      "commentprefix": "|",
+      "commentend": "|*/",
+    },
+  },
+  "fileHeaderComment.template": {
+    "CommentTitles": [
+      "${commentbegin}",
+      "${commentseparator}",
+      "${commentprefix} ",
+      "${commentseparator}",
+      "${commentprefix}",
+      "${commentend}",
+    ],
+    "*": [
+      "${commentbegin}",
+      "${commentseparator}",
+      "${commentprefix} ${project}",
+      "${commentseparator}",
+      "${commentprefix}",
+      "${commentprefix} Desenvolvido por: ${lead}",
+      "${commentprefix} Iniciado em: 08/2023",
+      "${commentprefix} Arquivo: ${filename}",
+      "${commentprefix} Data da Criação ${date}",
+      "${commentprefix} Copyright (c) ${year}",
+      "${commentprefix}",
+      "${commentseparator}",
+      "${commentend}",
+    ]
+  }
+}
