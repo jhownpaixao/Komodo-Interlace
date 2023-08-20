@@ -16,7 +16,6 @@ namespace Komodo\Interlace\QueryBuilder;
 |-----------------------------------------------------------------------------
 |*/
 
-
 use stdClass;
 
 class QueryBuilder
@@ -85,7 +84,6 @@ class QueryBuilder
 
     public function count($collumms = '*', $table = '')
     {
-        $table = $table ?: $this->tablename;
 
         if ('*' == $collumms) {
             $this->query->crud->params = [ "COUNT({$collumms})" ];
@@ -119,6 +117,25 @@ class QueryBuilder
         } else {
             $collumms = $this->normalizeCollum($collumms, $table);
             $this->query->crud->params = [ "COUNT( DISTINCT {$collumms} )" ];
+        }
+        return $this;
+    }
+
+    public function distinct($collumms = '*', $table = '')
+    {
+
+        if ('*' == $collumms) {
+            $this->query->crud->params = [ "DISTINCT ({$collumms})" ];
+        } elseif (is_array($collumms)) {
+            $collumms = array_map(function ($var) use ($table) {
+                $col = $this->normalizeCollum($var, $table);
+                return "DISTINCT ({$col})";
+            }, $collumms);
+
+            $this->query->crud->params = $collumms;
+        } else {
+            $collumms = $this->normalizeCollum($collumms, $table);
+            $this->query->crud->params = [ "DISTINCT ({$collumms})" ];
         }
         return $this;
     }
@@ -202,8 +219,21 @@ class QueryBuilder
     }
     private function normalizeCollum($collum, $table = '')
     {
-        $table = $table ?: $this->tablename;
-        return "`{$table}`.`{$collum}`";
+        $normalized = '';
+        switch ($table) {
+            case '':
+                $normalized = "`{$this->tablename}`.`{$collum}`";
+                break;
+
+            case 'null':
+                $normalized = $collum;
+                break;
+
+            default:
+                $normalized = "`{$table}`.`{$collum}`";
+                break;
+        }
+        return $normalized;
     }
 
     public function addConditionQuery($query)

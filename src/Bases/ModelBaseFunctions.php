@@ -16,18 +16,16 @@ namespace Komodo\Interlace\Bases;
 |-----------------------------------------------------------------------------
 |*/
 
-
 use Error;
-use Komodo\Logger\Logger;
-use Komodo\Routes\Error\ResponseError;
-use Komodo\Interlace\Association;
 use Komodo\Interlace\Adapter\Operator;
+use Komodo\Interlace\Association;
 use Komodo\Interlace\Interfaces\DatabaseAdapter;
 use Komodo\Interlace\Model;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
+use Komodo\Logger\Logger;
 use Throwable;
 
-trait ModelStaticBase
+trait ModelBaseFunctions
 {
 
     /**

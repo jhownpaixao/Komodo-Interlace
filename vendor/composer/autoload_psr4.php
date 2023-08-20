@@ -6,6 +6,10 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Tests\\' => array($baseDir . '/tests'),
+    'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'Komodo\\Logger\\' => array($vendorDir . '/komodo/logger/src'),
     'Komodo\\Interlace\\' => array($baseDir . '/src'),
+    'Komodo\\Configurator\\' => array($vendorDir . '/komodo/configurator/src'),
+    'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
 );

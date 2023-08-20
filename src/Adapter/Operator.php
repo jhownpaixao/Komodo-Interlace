@@ -16,7 +16,6 @@ namespace Komodo\Interlace\Adapter;
 |-----------------------------------------------------------------------------
 |*/
 
-
 use Komodo\Interlace\Association;
 use Komodo\Interlace\Enums\Op;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
@@ -33,7 +32,7 @@ class Operator
     /**
      * @var array
      */
-    private $associations = [];
+    private $associations = [  ];
 
     private function __construct($class)
     {
@@ -52,31 +51,37 @@ class Operator
     }
     /**
      *
-     * @param array<Op,array|string> $conditions
+     * @param array $conditions
      * @param string $owner
      *
      * @return array
      */
     public function createCondition($conditions, $owner)
     {
-        $query = [];
+        $query = [  ];
 
         foreach ($conditions as $op => $values) {
             if (is_array($values)) {
-
-                if ((array_keys($values)[0]) instanceof Op) {
+                if ((array_keys($values)[ 0 ]) instanceof Op) {
                     $values = self::createCondition($values, $owner);
                 }
+                switch ($op) {
+                    case Op::or:
+                        $v = sprintf("($op)", ...$values);
+                        break;
 
-                if (Op::or  == $op) {
-                    $v = sprintf("($op)", ...$values);
-                } else {
-                    $v = sprintf("$op", $owner, ...$values);
+                    case Op::in:
+                        $v = sprintf($op, $owner, implode(',', $values));
+                        break;
+
+                    default:
+                        $v = sprintf($op, $owner, ...$values);
+                        break;
                 }
             } else {
                 $v = sprintf("$op", $owner, $values);
             }
-            $query[] = $v;
+            $query[  ] = $v;
         }
         return $query;
     }
@@ -84,13 +89,13 @@ class Operator
     /**
      *
      * @param string $owner
-     * @param array<string,string|array> $conditions
+     * @param array $conditions
      *
      * @return void
      */
     public function mountConditions($owner, $conditions)
     {
-        $query = [];
+        $query = [  ];
         if (!$conditions) {
             return;
         }
@@ -104,9 +109,10 @@ class Operator
             } else {
                 $condition = "$collum = '$condition'";
             }
-            $query[] = $condition;
+            $query[  ] = $condition;
         }
-        $this->builder->addConditionQuery(implode(" AND ", $query));
+        $this->builder
+            ->addConditionQuery(implode(" AND ", $query));
     }
 
     public function createInclude($include)
@@ -117,7 +123,7 @@ class Operator
             return '';
         }
 
-        $association = (object) $associations[$include];
+        $association = (object) $associations[ $include ];
         $model = new $association->entity;
         $table = $model->getTablename();
 
@@ -137,13 +143,13 @@ class Operator
     public function mountIncludes($includes)
     {
 
-        $i = [];
+        $i = [  ];
         if (is_array($includes)) {
             foreach ($includes as $key => $include) {
-                $i[] = self::createInclude($include);
+                $i[  ] = self::createInclude($include);
             }
         } else {
-            $i[] = self::createInclude($includes);
+            $i[  ] = self::createInclude($includes);
         }
 
         return $i;
@@ -181,6 +187,25 @@ class Operator
         $this->builder->offset($offset);
     }
 
+    public function mountSelect($selects)
+    {
+        if (!$selects) {
+            return $this->builder->select((array) $this->model->getProps())->from();
+        }
+        foreach ($selects as $collunm => $op) {
+            switch ($op) {
+                case Op::count:
+                    $this->builder->select([  ])->count($collunm)->from();
+                    break;
+                case Op::distinct:
+                    $this->builder->select([  ])->distinct($collunm)->from();
+                    break;
+                case Op::countDistinct:
+                    $this->builder->select([  ])->countDistinc($collunm)->from();
+                    break;
+            }
+        }
+    }
     /**
      * @param array $associations
      *
@@ -188,7 +213,7 @@ class Operator
      */
     public function mountAssociations($associations)
     {
-        $a = [];
+        $a = [  ];
         if (!$associations) {
             return;
         }
@@ -204,14 +229,14 @@ class Operator
                 $data = $selected;
             } else {
                 $key = $selected;
-                $data = [];
+                $data = [  ];
             }
 
             if (!array_key_exists($key, $associates)) {
                 continue;
             }
 
-            $associate = $associates[$key];
+            $associate = $associates[ $key ];
             $model = $associate->getModel();
 
             $this->builder->select((array) $model->getProps(), $model->getTablename(), $key . ":");
@@ -232,7 +257,7 @@ class Operator
                     break;
             }
 
-            if (isset($data['require']) && $data['require']) {
+            if (isset($data[ 'require' ]) && $data[ 'require' ]) {
                 $joinType = 'inner';
             }
 
@@ -244,6 +269,9 @@ class Operator
             switch ($joinType) {
                 case 'inner':
                     $this->builder->innerJoin($model->getTablename());
+                    $k1 = $associate->getOringinKey();
+                    $tb2 = $model->getTablename();
+                    $k2 = $associate->getForeingkey();
                     break;
                 case 'left':
                     $this->builder->leftJoin($model->getTablename());
@@ -260,10 +288,10 @@ class Operator
             }
             $this->builder->on($k1)->equalColumm($k2, $tb2);
 
-            $attributes = array_key_exists('attributes', $data) ? $data['attributes'] : [];
-            $conditions = array_key_exists('where', $data) ? $data['where'] : [];
-            $group = array_key_exists('group', $data) ? $data['group'] : '';
-            $order = array_key_exists('order', $data) ? $data['order'] : [];
+            $attributes = array_key_exists('attributes', $data) ? $data[ 'attributes' ] : [  ];
+            $conditions = array_key_exists('where', $data) ? $data[ 'where' ] : [  ];
+            $group = array_key_exists('group', $data) ? $data[ 'group' ] : '';
+            $order = array_key_exists('order', $data) ? $data[ 'order' ] : [  ];
             // $count = isset($data[ 'count' ]) ? $data[ 'count' ] : false;
             // $includes = array_key_exists('include', $data) ? $data[ 'include' ] : [  ];
             // $association = array_key_exists('association', $data) ? $data[ 'association' ] : [  ];
@@ -290,13 +318,13 @@ class Operator
             self::mountGroup($group, $model->getTablename());
 
             // ?Limit
-            if (isset($data['limit'])) {
-                self::mountLimit($data['limit']);
+            if (isset($data[ 'limit' ])) {
+                self::mountLimit($data[ 'limit' ]);
             }
 
             // ?offset
-            if (isset($data['offset'])) {
-                self::mountOffset($data['offset']);
+            if (isset($data[ 'offset' ])) {
+                self::mountOffset($data[ 'offset' ]);
             }
         }
     }
@@ -304,13 +332,13 @@ class Operator
     public function mountQuery($owner, $params)
     {
 
-        $select = isset($params['select']) ? $params['select'] : '';
-        $attributes = array_key_exists('attributes', $params) ? $params['attributes'] : [];
-        $conditions = array_key_exists('where', $params) ? $params['where'] : [];
-        $includes = array_key_exists('include', $params) ? $params['include'] : [];
-        $association = array_key_exists('association', $params) ? $params['association'] : [];
-        $group = array_key_exists('group', $params) ? $params['group'] : '';
-        $order = array_key_exists('order', $params) ? $params['order'] : [];
+        $select = isset($params[ 'select' ]) ? $params[ 'select' ] : [  ];
+        $attributes = array_key_exists('attributes', $params) ? $params[ 'attributes' ] : [  ];
+        $conditions = array_key_exists('where', $params) ? $params[ 'where' ] : [  ];
+        $includes = array_key_exists('include', $params) ? $params[ 'include' ] : [  ];
+        $association = array_key_exists('association', $params) ? $params[ 'association' ] : [  ];
+        $group = array_key_exists('group', $params) ? $params[ 'group' ] : '';
+        $order = array_key_exists('order', $params) ? $params[ 'order' ] : [  ];
 
         // ?Attributes
         self::createQueryColumms($attributes, $owner);
@@ -319,11 +347,13 @@ class Operator
         self::mountIncludes($includes);
 
         // ?Associations
-        $this->associations = is_array($association) ? $association : [$association];
-        self::mountAssociations(is_array($association) ? $association : [$association]);
+        $this->associations = is_array($association) ? $association : [ $association ];
+        self::mountAssociations(is_array($association) ? $association : [ $association ]);
 
         // ?Conditions
-        $this->builder->where();
+        if ($conditions) {
+            $this->builder->where();
+        }
         self::mountConditions($owner, $conditions);
 
         // ?Order
@@ -333,28 +363,17 @@ class Operator
         self::mountGroup($group, $owner);
 
         // ?Limit
-        if (isset($params['limit'])) {
-            self::mountLimit($params['limit']);
+        if (isset($params[ 'limit' ])) {
+            self::mountLimit($params[ 'limit' ]);
         }
 
         // ?offset
-        if (isset($params['offset'])) {
-            self::mountOffset($params['offset']);
+        if (isset($params[ 'offset' ])) {
+            self::mountOffset($params[ 'offset' ]);
         }
 
-        // ?Select Method
-        switch ($select) {
-            case 'count':
-                $this->builder->select([])->count()->from();
-                break;
-            case 'countDistinct':
-                $this->builder->select([])->countDistinc('id')->from();
-                break;
-
-            default:
-                $this->builder->select((array) $this->model->getProps())->from();
-                break;
-        }
+        // ?Select structure
+        self::mountSelect($select);
 
         return $this->builder->mount();
     }
@@ -364,11 +383,11 @@ class Operator
      *
      * @return string
      */
-    public function createQueryColumms($columms = [], $table = '')
+    public function createQueryColumms($columms = [  ], $table = '')
     {
-        $cols = [];
+        $cols = [  ];
         foreach ($columms as $columm) {
-            $cols[] = self::fullCollumName($columm, $table);
+            $cols[  ] = self::fullCollumName($columm, $table);
         }
         return implode(',', $cols);
     }

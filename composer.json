@@ -4,8 +4,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Komodo\\Interlace\\": "src/"
+            "Komodo\\Interlace\\": "src/",
+            "Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit tests/Test.php"
     },
     "authors": [
         {
@@ -15,6 +19,10 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "komodo/logger": "dev-main"
+        "komodo/logger": "dev-main",
+        "komodo/configurator": "dev-main"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.4@dev"
     }
 }

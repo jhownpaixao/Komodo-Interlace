@@ -16,12 +16,9 @@ namespace Komodo\Interlace\Enums;
 |-----------------------------------------------------------------------------
 |*/
 
-
-use MyCLabs\Enum\Enum;
-
 enum Op: string
 {
-    // #Number comparation
+// #Number comparation
     case eq = "%s = '%s'";
     case major = "%s > '%s'";
     case minor = "%s < '%s'";
@@ -31,7 +28,7 @@ enum Op: string
     case between = "%s BETWEEN %s AND %s";
     case notBetween = "%s NOT BETWEEN '%s' AND '%s'";
 
-    // #Comparation
+// #Comparation
     case not = "%s NOT '%s'";
     case is = "%s IS '%s'";
     case like = "%s LIKE '%%%s%%'";
@@ -42,5 +39,9 @@ enum Op: string
 
     case in = "%s IN (%s)";
     case notIn = "%s NOT IN (%s)";
-    case or  = "%s OR %s";
+    case  or  = "%s OR %s";
+
+    case distinct = "DISTINCT(%S)";
+    case count = "COUNT(%S)";
+    case countDistinct = "COUNT(DISTINCT(%S))";
 }

@@ -16,9 +16,10 @@ namespace Komodo\Interlace;
 |-----------------------------------------------------------------------------
 |*/
 
-
 use Error;
+use Komodo\Interlace\Bases\ModelBaseFunctions;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
+use Komodo\Interlace\Static\ModelRepository;
 use ReflectionClass;
 use ReflectionProperty;
 use Throwable;
@@ -27,8 +28,10 @@ use Throwable;
  * @property string $created_at
  * @property string $updated_at
  */
-class Model extends ModelStatic
+#[\AllowDynamicProperties ]
+class Model extends ModelRepository
 {
+    use ModelBaseFunctions;
     /**
      * @var string|int
      */
@@ -64,7 +67,7 @@ class Model extends ModelStatic
      *
      * @return $this
      */
-    public function __construct($data = [], $associations = [])
+    public function __construct($data = [  ], $associations = [  ])
     {
         $this->associations = $this->associate();
         $this->setProps();
@@ -93,8 +96,8 @@ class Model extends ModelStatic
             if (!array_key_exists($association, $this->associations)) {
                 continue;
             }
-            $associate = $this->associations[$association];
-            $this->{$association} = [];
+            $associate = $this->associations[ $association ];
+            $this->{$association} = [  ];
 
             foreach ($list as $data) {
                 $class = $associate->getModelClassname();
@@ -104,7 +107,7 @@ class Model extends ModelStatic
                         $this->{$association} = $model;
                         break;
                     case 'has_many':
-                        $this->{$association}[] = $model;
+                        $this->{$association}[  ] = $model;
                         break;
 
                     case 'blg_one':
@@ -112,7 +115,7 @@ class Model extends ModelStatic
                         break;
 
                     case 'blg_many':
-                        $this->{$association}[] = $model;
+                        $this->{$association}[  ] = $model;
                         break;
                 }
             }
@@ -134,7 +137,7 @@ class Model extends ModelStatic
         if (!$this->repository) {
             $this->repository = array_key_first(parent::getRepositories());
         }
-        if (!isset(parent::getRepositories()[$this->repository])) {
+        if (!isset(parent::getRepositories()[ $this->repository ])) {
             throw new Error('Modelos com base de dados não reconhecidas');
         }
 
@@ -158,7 +161,7 @@ class Model extends ModelStatic
      */
     protected function associate()
     {
-        return [];
+        return [  ];
     }
 
     // #Public Methods
@@ -173,10 +176,7 @@ class Model extends ModelStatic
             $refl = new ReflectionClass($this);
 
             foreach ($this->props as $prop) {
-                $property = $refl->getProperty($prop);
-                if ($property instanceof ReflectionProperty) {
-                    $property->setValue($this, null);
-                }
+                $this->{$prop} = null;
             }
 
             return $r;
@@ -191,9 +191,9 @@ class Model extends ModelStatic
      *
      * @param array<string,string|int> $data
      *
-     * @return mixed
+     * @return bool
      */
-    public function update($data = [])
+    public function update($data = [  ])
     {
 
         if ($data) {
@@ -206,10 +206,10 @@ class Model extends ModelStatic
         }
 
         $refl = new ReflectionClass($this);
-        $bindValues = [];
-        $sets = [];
+        $bindValues = [  ];
+        $sets = [  ];
         foreach ($this->props as $prop) {
-            if (in_array($prop, ['updated_at', 'created_at', 'id'])) {
+            if (in_array($prop, [ 'updated_at', 'created_at', 'id' ])) {
                 continue;
             }
 
@@ -220,8 +220,8 @@ class Model extends ModelStatic
                 $v = $reflProp->getValue($this);
 
                 #Keys para vincular
-                $bindValues[":$prop"] = $v;
-                $sets[$prop] = ":$prop";
+                $bindValues[ ":$prop" ] = $v;
+                $sets[ $prop ] = ":$prop";
             }
         }
 
@@ -244,11 +244,11 @@ class Model extends ModelStatic
             return false;
         }
         $refl = new ReflectionClass($this);
-        $bindValues = [];
-        $sets = [];
+        $bindValues = [  ];
+        $sets = [  ];
 
         foreach ($this->props as $prop) {
-            if (in_array($prop, ['updated_at', 'created_at', 'id'])) {
+            if (in_array($prop, [ 'updated_at', 'created_at', 'id' ])) {
                 continue;
             }
             $reflProp = $refl->getProperty($prop);
@@ -258,8 +258,8 @@ class Model extends ModelStatic
                 $v = $reflProp->getValue($this);
 
                 #Keys para vincular
-                $bindValues[":$prop"] = $v;
-                $sets[$prop] = ":$prop";
+                $bindValues[ ":$prop" ] = $v;
+                $sets[ $prop ] = ":$prop";
             }
         }
 

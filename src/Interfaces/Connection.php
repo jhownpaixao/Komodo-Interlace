@@ -9,16 +9,16 @@ namespace Komodo\Interlace\Interfaces;
 |
 | Desenvolvido por: Jhonnata Paixão (Líder de Projeto)
 | Iniciado em: 08/2023
-| Arquivo: DatabaseAdapter.php
+| Arquivo: Connection
+.php
 | Data da Criação Fri Aug 11 2023
 | Copyright (c) 2023
 |
 |-----------------------------------------------------------------------------
 |*/
 
-interface DatabaseAdapter
+interface Connection
 {
-
     /**
      * @param mixed $query
      * @param array $params
