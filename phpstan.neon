@@ -1,0 +1,13 @@
+parameters:
+	level: 6
+	paths:
+		- src
+
+	typeAliases:
+		ConditionOperator: 'array<\Komodo\Interlace\Enums\Op,string|int|array>'
+		Where: 'array<\Komodo\Interlace\Enums\Op|string,string|int|array|ConditionOperator>'
+		Select: 'array<string,Op>'
+		Assoc: 'array<\string,OperatorParams>'
+		OperatorParams: 'array{where?: Where, select?: Select, associations?: Assoc }'
+		QueryParams: 'array<string,string|int|bool>'
+		AssociationParams: 'array<string,\Komodo\Interlace\Association>'

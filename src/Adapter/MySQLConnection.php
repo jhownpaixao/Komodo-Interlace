@@ -48,19 +48,12 @@ class MySQLConnection implements RemoteConnection
     const TYPE_GEOMETRY = "GEOMETRY";
 
     protected PDO $connection;
-
     protected string $host;
-
     protected string $user;
-
     protected string $pass;
-
     protected string $dbname;
-
     protected string $tablename;
-
     protected string $charset;
-
     protected Logger $logger;
 
     protected function __construct(string $host, string $user, string $pass, string $dbname, string $charset, Logger $logger)
@@ -83,7 +76,7 @@ class MySQLConnection implements RemoteConnection
      * @param string $charset
      * @param Logger $logger
      *
-     * @return $this
+     * @return MySQLConnection
      */
     public static function create($host, $user, $pass, $dbname, $charset = 'utf8', $logger = null)
     {
@@ -92,22 +85,52 @@ class MySQLConnection implements RemoteConnection
         return new self($host, $user, $pass, $dbname, $charset, $logger);
     }
 
+    /**
+     * fetch
+     *
+     * @param  mixed $query
+     * @param  array<string,string> $params
+     * @return mixed
+     */
     public function fetch($query, $params = [  ])
     {
         return $this->query($query, $params, 'fetch', PDO::FETCH_ASSOC);
     }
 
+    /**
+     * fetch
+     *
+     * @param  mixed $query
+     * @param  array<string,string> $params
+     * @return mixed
+     */
     public function fetchAll($query, $params = [  ])
     {
         return $this->query($query, $params, 'fetchAll', PDO::FETCH_ASSOC);
     }
 
+    /**
+     * fetch
+     *
+     * @param  mixed $query
+     * @param  array<string,string> $params
+     * @return mixed
+     */
     public function fetchColumm($query, $params = [  ])
     {
         return $this->query($query, $params, 'fetchColumn', PDO::FETCH_ASSOC);
     }
 
     // #Privaate Methods
+    /**
+     * query
+     *
+     * @param  mixed $query
+     * @param  array<string,string> $params
+     * @param  string $fetchMethod
+     * @param  int $fetchMode
+     * @return mixed
+     */
     protected function query($query, $params, $fetchMethod, $fetchMode)
     {
 
@@ -143,7 +166,7 @@ class MySQLConnection implements RemoteConnection
     {
         return $this->connection->lastInsertId();
     }
-    protected function connect()
+    protected function connect(): void
     {
 
         try {
@@ -161,7 +184,14 @@ class MySQLConnection implements RemoteConnection
         }
     }
 
-    protected function convertTypes(\PDOStatement $statment, array $data)
+    /**
+     * convertTypes
+     *
+     * @param  \PDOStatement $statment
+     * @param  array<string,string|array> $data
+     * @return array<string,mixed>
+     */
+    protected function convertTypes($statment, $data)
     {
         foreach ($data as $column => $value) {
             $i = array_search($column, array_keys($data));
@@ -180,6 +210,9 @@ class MySQLConnection implements RemoteConnection
     }
     protected function valueTypeResolver(string $type, $var)
     {
+        if (!$var) {
+            return null;
+        }
         switch ($type) {
             case static::TYPE_TINY:
                 return (bool) $var;

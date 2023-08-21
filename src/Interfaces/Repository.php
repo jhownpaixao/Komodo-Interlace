@@ -42,7 +42,7 @@ interface Repository
      * Procura por um único registro que atenda
      * à condição específica
      *
-     * @param array $params
+     * @param OperatorParams $params
      *
      * @return \Komodo\Interlace\Entity|TEntity|null
      */
@@ -52,7 +52,7 @@ interface Repository
      * Procura por todos os registros que atendem
      * às condições fornecidas
      *
-     * @param array $params
+     * @param OperatorParams $params
      *
      * @return \Komodo\Interlace\Entity[]|TEntity[]
      */
@@ -61,7 +61,7 @@ interface Repository
     /**
      * Retorna o total de registros encontrados
      *
-     * @param array $params
+     * @param OperatorParams $params
      *
      * @return int
      */
@@ -71,7 +71,7 @@ interface Repository
      * Excluí todos os registros que atendam
      * à condição fornecida
      *
-     * @param array $params
+     * @param OperatorParams $params
      *
      * @return bool
      */

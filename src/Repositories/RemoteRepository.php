@@ -16,7 +16,7 @@ namespace Komodo\Interlace\Repositories;
 |*/
 
 use Exception;
-use Komodo\Interlace\Adapter\Operator;
+use Komodo\Interlace\Adapter\Operator\OperatorResolver;
 use Komodo\Interlace\Association;
 use Komodo\Interlace\Entity;
 use Komodo\Interlace\Enums\Op;
@@ -71,7 +71,7 @@ abstract class RemoteRepository implements Repository
      */
     protected $timestamp = true;
 
-    private function __construct()
+    final private function __construct()
     {
         $this->init();
     }
@@ -217,7 +217,7 @@ abstract class RemoteRepository implements Repository
 
     private function getQueryOperator($params)
     {
-        $operator = Operator::get($this->entity);
+        $operator = OperatorResolver::get($this->entity);
         $query = $operator->mountQuery($this->tablename, $params);
         return [ $query, $operator ];
     }
@@ -305,7 +305,7 @@ abstract class RemoteRepository implements Repository
              */
             $m = new $this->entity;
 
-            $operator = Operator::get($this->entity);
+            $operator = OperatorResolver::get($this->entity);
             $params[ 'select' ] = [
                 'id' => Op::count,
              ];

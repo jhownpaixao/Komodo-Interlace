@@ -1,5 +1,6 @@
 <?php
-namespace Tests\DDD\App\Providers;
+
+namespace Komodo\Interlace\Providers;
 
 /*
 |-----------------------------------------------------------------------------
@@ -14,6 +15,7 @@ namespace Tests\DDD\App\Providers;
 |
 |-----------------------------------------------------------------------------
 |*/
+
 use Komodo\Interlace\Interfaces\LocalConnection;
 use Komodo\Interlace\Interfaces\RemoteConnection;
 
@@ -30,7 +32,7 @@ final class ConnectionProvider
     /**
      * Method getConnection
      *
-     * @param $name $name [explicite description]
+     * @param $name
      *
      * @return LocalConnection|RemoteConnection
      */

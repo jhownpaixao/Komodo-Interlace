@@ -1,8 +1,9 @@
 <?php
 namespace Tests\DDD\Infra\Repositories;
 
+use Komodo\Interlace\Providers\ConnectionProvider;
 use Komodo\Interlace\Repositories\RemoteRepository;
-use Tests\DDD\App\Providers\ConnectionProvider;
+
 use Tests\DDD\Domain\Cliente\Cliente;
 
 /**

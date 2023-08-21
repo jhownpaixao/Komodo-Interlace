@@ -17,9 +17,11 @@ namespace Komodo\Interlace;
 |*/
 
 use Error;
-use Komodo\Interlace\Bases\ModelBaseFunctions;
+use Exception;
+use Komodo\Interlace\Interfaces\Connection;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
-use Komodo\Interlace\Static\ModelRepository;
+use Komodo\Interlace\Static\ModelStaticFunctions;
+use Komodo\Logger\Logger;
 use ReflectionClass;
 use ReflectionProperty;
 use Throwable;
@@ -29,60 +31,38 @@ use Throwable;
  * @property string $updated_at
  */
 #[\AllowDynamicProperties ]
-class Model extends ModelRepository
+class Model
 {
-    use ModelBaseFunctions;
-    /**
-     * @var string|int
-     */
+    use ModelStaticFunctions;
+    /** @var string|int*/
     public $id;
-
-    /**
-     * @var \stdClass Propriedades da entidade
-     */
+    /** @var \stdClass */
     protected $props;
-
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $tablename;
-
-    /**
-     * @var bool
-     */
-    protected $timestamp = true;
-
-    /**
-     * @var Association[]
-     */
+    /** @var bool */
+    protected $timestamp;
+    /** @var Association[] */
     protected $associations;
-
-    /**
-     * @var string
-     */
+    /** @var Connection */
     protected $repository;
+    /** @var Logger */
+    protected $logger;
 
-    /**
-     * @param array $data
-     *
-     * @return $this
-     */
     public function __construct($data = [  ], $associations = [  ])
     {
-        $this->associations = $this->associate();
-        $this->setProps();
-        $this->sync($data, $associations);
+        $this->init($data, $associations);
     }
 
     // #Protected Methods
     /**
-     * Sincroniza a entidade atual com os dados informados
+     * Sincroniza a entidade filha com os dados informados na construção
      *
      * @param array $data
      *
      * @return void
      */
-    protected function sync($data, $associations)
+    protected function syncData($data, $associations)
     {
         foreach ($data as $prop => $value) {
             if (!in_array($prop, (array) $this->props)) {
@@ -123,23 +103,13 @@ class Model extends ModelRepository
     }
 
     /**
-     * Recupera todas as propriedades definidas pela classe filha
+     * Define todas as proprieades que serão trabalhadas,
+     * informadas pela entidade filha
      *
      * @return void
      */
-    protected function setProps()
+    protected function resolverProperties()
     {
-
-        $classname = (new ReflectionClass($this))->getShortName();
-
-        $this->tablename = $this->tablename ?: strtolower($classname) . 's';
-
-        if (!$this->repository) {
-            $this->repository = array_key_first(parent::getRepositories());
-        }
-        if (!isset(parent::getRepositories()[ $this->repository ])) {
-            throw new Error('Modelos com base de dados não reconhecidas');
-        }
 
         if ($this->timestamp) {
             $this->{"created_at"} = "created_at";
@@ -156,7 +126,33 @@ class Model extends ModelRepository
         }
     }
 
+    protected function init(array $data, array $associations)
+    {
+        $setup = $this->setup();
+
+        $thisClassName = (new ReflectionClass($this))->getShortName();
+
+        $this->logger = isset($setup[ 'logger' ]) && $setup[ 'logger' ] instanceof Logger ? clone $setup[ 'logger' ] : new Logger;
+        $this->tablename = isset($setup[ 'tablename' ]) ? $setup[ 'tablename' ] : strtolower($thisClassName) . 's';
+        $this->timestamp = isset($setup[ 'timestamp' ]) ? $setup[ 'timestamp' ] : true;
+        $this->logger->register(static::class);
+
+        // !Required
+        if (!isset($setup[ 'connection' ])) {
+            throw new Exception("No connection reported for this entity: $thisClassName");
+        } elseif (!$setup[ 'connection' ] instanceof Connection) {
+            throw new Exception("The specified connection object is not compatible with this model. Expected: " . Connection::class);
+        }
+        $this->repository = $setup[ 'connection' ];
+
+        $this->associations = $this->associate();
+        $this->resolverProperties();
+        $this->syncData($data, $associations);
+    }
+
     /**
+     * Inicializa as associações definidas pela entidade
+     *
      * @return Association[]
      */
     protected function associate()
@@ -164,14 +160,29 @@ class Model extends ModelRepository
         return [  ];
     }
 
+    /**
+     * Defini os parametros de operação fornecidos pela entidade
+     *
+     * @return array
+     */
+    protected function setup()
+    {
+        return [  ];
+    }
+
     // #Public Methods
+
+    /**
+     * Excluí esta entidade
+     *
+     * @return bool
+     */
     public function delete()
     {
         try {
             $builder = new QueryBuilder($this->tablename);
             $builder->delete()->where('id')->equal($this->id);
-            $repository = parent::getRepository($this->repository);
-            $r = $repository->execute($builder->mount());
+            $r = $this->repository->execute($builder->mount());
 
             $refl = new ReflectionClass($this);
 
@@ -181,15 +192,16 @@ class Model extends ModelRepository
 
             return $r;
         } catch (Throwable $th) {
-            Model::$logger->error($th->getMessage());
+            $this->logger->error($th->getMessage());
             throw $th;
         }
     }
 
     /**
-     * update
+     * Atualiza a database desta entidade com base nos valores atuais,
+     * e/ou fornecidos no parametro $data
      *
-     * @param array<string,string|int> $data
+     * @param array<string,string|int> $data Dados opcionais para substituir nesta atualização
      *
      * @return bool
      */
@@ -228,16 +240,21 @@ class Model extends ModelRepository
         try {
             $builder = new QueryBuilder($this->tablename);
             $builder->update()->set($sets)->where('id')->equal($this->id);
-            $repository = parent::getRepository($this->repository);
-            $r = $repository->execute($builder->mount(), $bindValues);
+            $r = $this->repository->execute($builder->mount(), $bindValues);
 
             return $r;
         } catch (Throwable $th) {
-            Model::$logger->error($th->getMessage());
+            $this->logger->error($th->getMessage());
             throw $th;
         }
     }
 
+    /**
+     * Salva esta entidade na database e defini seu novo ID
+     * caso esta entidade ja tenha um ID, a operação será ignorada
+     *
+     * @return bool
+     */
     public function persist()
     {
         if ($this->id) {
@@ -266,23 +283,23 @@ class Model extends ModelRepository
         try {
             $builder = new QueryBuilder($this->tablename);
             $builder->insert(array_keys($sets))->values($sets);
-
-            $repository = parent::getRepository($this->repository);
-            $r = $repository->execute($builder->mount(), $bindValues);
+            $r = $this->repository->execute($builder->mount(), $bindValues);
 
             if ($r) {
-                $this->id = $repository->lastInsertId();
+                $this->id = $this->repository->lastInsertId();
             }
 
             return $r;
         } catch (Throwable $th) {
-            Model::$logger->error($th->getMessage());
+            $this->logger->error($th->getMessage());
             return false;
             // throw new ResponseError($th->getMessage(), HTTPResponseCode::ITERNALERRO);
         }
     }
 
     /**
+     * Retorna as propriedades desta entidade
+     *
      * @return \stdClass
      */
     public function getProps()
@@ -290,7 +307,15 @@ class Model extends ModelRepository
         return $this->props;
     }
 
+    public function getCollumns()
+    {
+        return (array) $this->props;
+    }
+
     /**
+     * Retorna o nome da tabela/entidade que está sendo usado
+     * por este modelo
+     *
      * @return string
      */
     public function getTablename()
@@ -299,6 +324,9 @@ class Model extends ModelRepository
     }
 
     /**
+     * Retorna todas os parametros de associação
+     * desta entidade
+     *
      * @return array
      */
     public function getAssociations()
@@ -306,8 +334,23 @@ class Model extends ModelRepository
         return $this->associations;
     }
 
+    /**
+     * Retorna o repositório desta entidade
+     *
+     * @return void
+     */
     public function getConnection()
     {
-        return parent::getRepository($this->repository);
+        return $this->repository;
+    }
+
+    /**
+     * Retorna o objeto de Logger em uso
+     *
+     * @return Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
     }
 }

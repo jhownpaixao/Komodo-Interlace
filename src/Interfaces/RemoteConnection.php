@@ -21,7 +21,7 @@ interface RemoteConnection extends Connection
 {
     /**
      * @param mixed $query
-     * @param array $params
+     * @param array<string,string> $params
      *
      * @return mixed
      */
@@ -29,7 +29,7 @@ interface RemoteConnection extends Connection
 
     /**
      * @param mixed $query
-     * @param array $params
+     * @param array<string,string> $params
      *
      * @return mixed
      */
@@ -37,7 +37,7 @@ interface RemoteConnection extends Connection
 
     /**
      * @param mixed $query
-     * @param array $params
+     * @param array<string,string> $params
      *
      * @return mixed
      */
@@ -45,7 +45,7 @@ interface RemoteConnection extends Connection
 
     /**
      * @param mixed $query
-     * @param array $params
+     * @param array<string,string> $params
      *
      * @return bool
      */

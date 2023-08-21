@@ -1,6 +1,6 @@
 <?php
 
-namespace Komodo\Interlace\Bases;
+namespace Komodo\Interlace\Static;
 
 /*
 |-----------------------------------------------------------------------------
@@ -9,30 +9,23 @@ namespace Komodo\Interlace\Bases;
 |
 | Desenvolvido por: Jhonnata Paixão (Líder de Projeto)
 | Iniciado em: 08/2023
-| Arquivo: ModelStaticBase.php
-| Data da Criação Fri Aug 11 2023
+| Arquivo: ModelStaticFunctions.php
+| Data da Criação Sun Aug 20 2023
 | Copyright (c) 2023
 |
 |-----------------------------------------------------------------------------
 |*/
 
 use Error;
-use Komodo\Interlace\Adapter\Operator;
+use Komodo\Interlace\Adapter\Operator\OperatorResolver;
 use Komodo\Interlace\Association;
-use Komodo\Interlace\Interfaces\DatabaseAdapter;
+use Komodo\Interlace\Interfaces\Connection;
 use Komodo\Interlace\Model;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
-use Komodo\Logger\Logger;
 use Throwable;
 
-trait ModelBaseFunctions
+trait ModelStaticFunctions
 {
-
-    /**
-     * @var Logger
-     */
-    public static $logger;
-
     /**
      * @param string|int $pk
      *
@@ -52,7 +45,7 @@ trait ModelBaseFunctions
             $builder->select((array) $m->getProps())->from()->where('id')->equal($pk)->limit(1);
 
             /**
-             * @var DatabaseAdapter
+             * @var Connection
              */
             $repository = $m->getConnection();
             $r = $repository->fetch($builder->mount());
@@ -65,7 +58,7 @@ trait ModelBaseFunctions
 
             return $model;
         } catch (Throwable $th) {
-            self::$logger->error($th->getMessage());
+            $m->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
@@ -85,7 +78,7 @@ trait ModelBaseFunctions
             $builder->select((array) $m->getProps())->from();
 
             /**
-             * @var DatabaseAdapter
+             * @var Connection
              */
             $repository = $m->getConnection();
             $r = $repository->fetchAll($builder->mount());
@@ -97,28 +90,28 @@ trait ModelBaseFunctions
 
             return self::sqlMapResult($r);
         } catch (Throwable $th) {
-            self::$logger->error($th->getMessage());
+            $m->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
 
     /**
-     * @param array $params
+     * @param array{where?: Where, select?: Select, associations?: Assoc } $params
      *
      * @return $this|null
      */
     public static function findOne($params)
     {
-
         try {
             $m = get_called_class();
             $m = new $m;
 
-            $operator = Operator::get($m);
+            $operator = OperatorResolver::get(static::class);
+           
             $query = $operator->mountQuery($m->getTablename(), $params);
-
+            var_dump($query);
             /**
-             * @var DatabaseAdapter
+             * @var Connection
              */
             $repository = $m->getConnection();
             $r = $repository->fetchAll($query);
@@ -131,13 +124,13 @@ trait ModelBaseFunctions
 
             return $model;
         } catch (Throwable $th) {
-            self::$logger->error($th->getMessage());
+            $m->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
 
     /**
-     * @param array $params
+     * @param array{where?: Where, select?: Select, associations?: Assoc } $params
      *
      * @return array| $this[]
      */
@@ -151,10 +144,10 @@ trait ModelBaseFunctions
             $m = get_called_class();
             $m = new $m;
 
-            $operator = Operator::get($m);
+            $operator = OperatorResolver::get(static::class);
             $query = $operator->mountQuery($m->getTablename(), $params);
             /**
-             * @var DatabaseAdapter
+             * @var Connection
              */
             $repository = $m->getConnection();
             $r = $repository->fetchAll($query);
@@ -165,13 +158,13 @@ trait ModelBaseFunctions
 
             return self::filterMultiSQLData($m, $r, $operator->getAssociations());
         } catch (Throwable $th) {
-            self::$logger->error($th->getMessage());
+            $m->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
 
     /**
-     * @param array $params
+     * @param array{where?: Where, select?: Select, associations?: Assoc } $params
      *
      * @return int
      */
@@ -184,25 +177,25 @@ trait ModelBaseFunctions
             $m = get_called_class();
             $m = new $m;
 
-            $operator = Operator::get($m);
+            $operator = OperatorResolver::get(static::class);
             $params[ 'select' ] = 'countDistinct'; // set mod count
             $query = $operator->mountQuery($m->getTablename(), $params);
 
             /**
-             * @var DatabaseAdapter
+             * @var Connection
              */
             $repository = $m->getConnection();
             $r = $repository->fetchColumm($query);
 
             return intval($r);
         } catch (Throwable $th) {
-            self::$logger->error($th->getMessage());
+            $m->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
 
     /**
-     * @param array $params
+     * @param array{where?: Where, select?: Select, associations?: Assoc } $params
      *
      * @return bool
      */
@@ -212,14 +205,14 @@ trait ModelBaseFunctions
             $m = get_called_class();
             $m = new $m;
             $tablename = $m->getTablename();
-            $operator = Operator::get($m);
+            $operator = OperatorResolver::get(static::class);
 
             $query = $operator->mountQuery($tablename, $params);
             $builder = new QueryBuilder($tablename);
             $builder->delete();
 
             /**
-             * @var DatabaseAdapter
+             * @var Connection
              */
             $repository = $m->getConnection();
             $r = $repository->fetchAll($builder->mount() . " " . $query);
@@ -230,14 +223,14 @@ trait ModelBaseFunctions
 
             return true;
         } catch (Throwable $th) {
-            self::$logger->error($th->getMessage());
+            $m->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
 
     /**
-     * @param array $data
-     * @param array $associations
+     * @param array<string,int|string> $data
+     * @param array<string,array|string> $associations
      *
      * @return $this|array|false
      */
@@ -266,7 +259,7 @@ trait ModelBaseFunctions
             ;
             return $m;
         } catch (Throwable $th) {
-            self::$logger->error($th->getMessage());
+            $m->getLogger()->error($th->getMessage());
             throw $th;
         }
     }

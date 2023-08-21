@@ -16,32 +16,34 @@ namespace Komodo\Interlace\Enums;
 |-----------------------------------------------------------------------------
 |*/
 
-enum Op: string
+abstract class Op extends Enum
 {
 // #Number comparation
-    case eq = "%s = '%s'";
-    case major = "%s > '%s'";
-    case minor = "%s < '%s'";
-    case minEq = "%s <= '%s'";
-    case majEq = "%s >= '%s'";
-    case notEq = "%s != '%s'";
-    case between = "%s BETWEEN %s AND %s";
-    case notBetween = "%s NOT BETWEEN '%s' AND '%s'";
+    const EQ = "%s = %s";
+    const MAJOR = "%s > %s";
+    const MINOR = "%s < %s";
+    const MIN_EQ = "%s <= %s";
+    const MAJ_EQ = "%s >= %s";
+    const NOT_EQ = "%s != %s";
+    const BETWEEN = "%s BETWEEN %s AND %s";
+    const NOT_BETWEEN = "%s NOT BETWEEN '%s' AND '%s'";
 
 // #Comparation
-    case not = "%s NOT '%s'";
-    case is = "%s IS '%s'";
-    case like = "%s LIKE '%%%s%%'";
-    case notLike = "%s NOT LIKE '%%%s%%'";
+    const NOT_NULL = "%s IS NOT NULL";
+    const IS = "%s IS '%s'";
+    const LIKE = "%s LIKE '%%%s%%'";
+    const NOT_LIKE = "%s NOT LIKE '%%%s%%'";
 
-    case start = "%s LIKE '%s%%'";
-    case end = "%s LIKE '%%%s'";
+    const START = "%s LIKE '%s%%'";
+    const END = "%s LIKE '%%%s'";
 
-    case in = "%s IN (%s)";
-    case notIn = "%s NOT IN (%s)";
-    case  or  = "%s OR %s";
+    const IN = "%s IN (%s)";
+    const NOT_IN = "%s NOT IN (%s)";
 
-    case distinct = "DISTINCT(%S)";
-    case count = "COUNT(%S)";
-    case countDistinct = "COUNT(DISTINCT(%S))";
+    const OR = "%s OR %s";
+    const AND = "%s AND %s";
+
+    const DISTINCT = "DISTINCT(%s)";
+    const COUNT = "COUNT(%s)";
+    const COUNT_DISTINCT = "COUNT(DISTINCT(%s))";
 }

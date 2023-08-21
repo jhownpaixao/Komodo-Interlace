@@ -217,7 +217,7 @@ class QueryBuilder
 
         return sprintf("%s %s %s %s", $crud, $join, $condition, $organization);
     }
-    private function normalizeCollum($collum, $table = '')
+    public function normalizeCollum($collum, $table = '')
     {
         $normalized = '';
         switch ($table) {

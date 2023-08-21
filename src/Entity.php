@@ -9,14 +9,12 @@ namespace Komodo\Interlace;
 |
 | Desenvolvido por: Jhonnata Paixão (Líder de Projeto)
 | Iniciado em: 08/2023
-| Arquivo: Model.php
-| Data da Criação Fri Aug 11 2023
+| Arquivo: Entity.php
+| Data da Criação Sun Aug 20 2023
 | Copyright (c) 2023
 |
 |-----------------------------------------------------------------------------
 |*/
-
-use ReflectionClass;
 
 /**
  * @property string $created_at

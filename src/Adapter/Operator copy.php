@@ -17,11 +17,18 @@ namespace Komodo\Interlace\Adapter;
 |*/
 
 use Komodo\Interlace\Association;
+use Komodo\Interlace\Entity;
 use Komodo\Interlace\Enums\Op;
+use Komodo\Interlace\Model;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
 
 class Operator
 {
+    /**
+     * model
+     *
+     * @var Model|Entity
+     */
     private $model;
 
     /**
@@ -30,11 +37,11 @@ class Operator
     private $builder;
 
     /**
-     * @var array
+     * @var AssociationParams
      */
     private $associations = [  ];
 
-    private function __construct($class)
+    private function __construct(string $class)
     {
         $this->model = new $class;
         $this->builder = new QueryBuilder($this->model->getTablename());
@@ -43,18 +50,17 @@ class Operator
     /**
      * @param string $class
      *
-     * @return $this
+     * @return Operator
      */
     public static function get($class)
     {
         return new self($class);
     }
     /**
-     *
-     * @param array $conditions
+     * @param array<\BackedEnum,string|string> $conditions
      * @param string $owner
      *
-     * @return array
+     * @return string[]
      */
     public function createCondition($conditions, $owner)
     {
@@ -67,15 +73,15 @@ class Operator
                 }
                 switch ($op) {
                     case Op::or:
-                        $v = sprintf("($op)", ...$values);
+                        $v = sprintf("({$op->value})", ...$values);
                         break;
 
                     case Op::in:
-                        $v = sprintf($op, $owner, implode(',', $values));
+                        $v = sprintf($op->value, $owner, implode(',', $values));
                         break;
 
                     default:
-                        $v = sprintf($op, $owner, ...$values);
+                        $v = sprintf($op->value, $owner, ...$values);
                         break;
                 }
             } else {

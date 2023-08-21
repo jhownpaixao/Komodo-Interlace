@@ -1,9 +1,7 @@
 <?php
 namespace Tests\DDD\Domain\Cliente;
 
-use Komodo\Interlace\Entity;
-
-class Cliente extends Entity
+class Cliente extends \Komodo\Interlace\Entity
 {
     public $nome;
     public $cpf;
