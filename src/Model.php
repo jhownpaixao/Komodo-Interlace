@@ -18,9 +18,9 @@ namespace Komodo\Interlace;
 
 use Error;
 use Exception;
+use Komodo\Interlace\Bases\ModelStaticFunctions;
 use Komodo\Interlace\Interfaces\Connection;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
-use Komodo\Interlace\Static\ModelStaticFunctions;
 use Komodo\Logger\Logger;
 use ReflectionClass;
 use ReflectionProperty;
