@@ -109,7 +109,6 @@ trait Condition
             }
         } else {
             if ($this->isOperator($condition)) {
-                var_dump($condition);
                 $query[  ] = $this->resolverCondition($condition, '', $column); #Valid only for the cause: Collumn=> Op
             } else {
                 $query[  ] = "$column = " . $this->convertValueToQuery($condition);
