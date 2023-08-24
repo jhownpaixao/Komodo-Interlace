@@ -210,8 +210,29 @@ trait Condition
                 $v = sprintf($op, $collunm, implode(',', $value));
                 break;
 
+            case Op::LIKE:
+                $requireTraitValues('string');
+                $v = sprintf($op, $collunm, $value);
+                break;
+
+            case Op::NOT_LIKE:
+                $requireTraitValues('string');
+                $v = sprintf($op, $collunm, $value);
+                break;
+
+            case Op::START:
+                $requireTraitValues('string');
+                $v = sprintf($op, $collunm, $value);
+                break;
+
+            case Op::END:
+                $requireTraitValues('string');
+                $v = sprintf($op, $collunm, $value);
+                break;
+
             default:
                 $requireTraitValues('string');
+                $value = $this->convertValueToQuery($value);
                 $v = sprintf($op, $collunm, $value);
                 break;
         }

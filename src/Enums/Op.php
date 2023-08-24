@@ -30,7 +30,7 @@ abstract class Op extends Enum
 
 // #Comparation
     const NOT_NULL = "%s IS NOT NULL";
-    const IS = "%s IS '%s'";
+    const IS = "%s IS %s";
     const LIKE = "%s LIKE '%%%s%%'";
     const NOT_LIKE = "%s NOT LIKE '%%%s%%'";
 
