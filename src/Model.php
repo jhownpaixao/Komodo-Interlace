@@ -141,14 +141,16 @@ class Model
 
         if (!isset($setup[ 'connection' ])) {
             $connection = ConnectionProvider::getDefaultConnection();
+        } else {
+            $connection = $setup[ 'connection' ];
         }
         // !Required
         if (!$connection) {
             throw new Exception("No connection reported for this entity: $thisClassName");
-        } elseif (!$setup[ 'connection' ] instanceof Connection) {
+        } elseif (!$connection instanceof Connection) {
             throw new Exception("The specified connection object is not compatible with this model. Expected: " . Connection::class);
         }
-        $this->repository = $setup[ 'connection' ];
+        $this->repository = $connection;
 
         $this->associations = $this->associate();
         $this->resolverProperties();
