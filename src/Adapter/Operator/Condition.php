@@ -71,7 +71,7 @@ trait Condition
                     break;
 
                 default:
-                    throw new \InvalidArgumentException('Some data informed in the "where" parameter is invalid: ');
+                    throw new \InvalidArgumentException('Some data informed in the "where" parameter is invalid: ' . $type);
             }
         }
         return $query;
@@ -120,11 +120,11 @@ trait Condition
         $query = [  ];
 
         switch ($property) {
-            case Op::AND:
+            case Op:: and :
                 $r = $this->processAllConditions($owner, $condition);
                 $query[  ] = "(" . implode(' AND ', $r) . ")";
                 break;
-            case Op::OR:
+            case Op:: or :
                 $r = $this->processAllConditions($owner, $condition);
                 $query[  ] = "(" . implode(' OR ', $r) . ")";
                 break;
