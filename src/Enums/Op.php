@@ -29,6 +29,7 @@ abstract class Op extends Enum
     const NOT_BETWEEN = "%s NOT BETWEEN '%s' AND '%s'";
 
 // #Comparation
+    const NULL = "%s IS NULL";
     const NOT_NULL = "%s IS NOT NULL";
     const IS = "%s IS %s";
     const LIKE = "%s LIKE '%%%s%%'";
