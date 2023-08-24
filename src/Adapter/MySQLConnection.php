@@ -149,7 +149,9 @@ class MySQLConnection implements RemoteConnection
                 return null;
             }
             if ($result = call_user_func_array([ $statment, $fetchMethod ], [  ])) {
-                $result = $this->convertTypes($statment, $result);
+                if (is_array($result)) {
+                    $result = $this->convertTypes($statment, $result);
+                }
             };
 
             return $result;
