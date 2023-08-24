@@ -47,14 +47,22 @@ class MySQLConnection implements RemoteConnection
     const TYPE_INTERVAL = "INTERVAL";
     const TYPE_GEOMETRY = "GEOMETRY";
 
-    protected PDO $connection;
-    protected string $host;
-    protected string $user;
-    protected string $pass;
-    protected string $dbname;
-    protected string $tablename;
-    protected string $charset;
-    protected Logger $logger;
+    /** @var PDO */
+    protected $connection;
+    /** @var string */
+    protected $host;
+    /** @var string */
+    protected $user;
+    /** @var string */
+    protected $pass;
+    /** @var string */
+    protected $dbname;
+    /** @var string */
+    protected $tablename;
+    /** @var string */
+    protected $charset;
+    /** @var Logger */
+    protected $logger;
 
     protected function __construct(string $host, string $user, string $pass, string $dbname, string $charset, Logger $logger)
     {
