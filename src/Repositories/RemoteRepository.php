@@ -316,7 +316,7 @@ abstract class RemoteRepository implements Repository
 
             $operator = OperatorResolver::get($this->entity);
             $params[ 'select' ] = [
-                'id' => Op::COUNT,
+                'id' => Op::COUNT_DISTINCT,
              ];
             $query = $operator->mountQuery($this->tablename, $params);
             $r = $this->connection->fetchColumm($query);

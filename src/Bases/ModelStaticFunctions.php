@@ -18,6 +18,7 @@ namespace Komodo\Interlace\Bases;
 use Error;
 use Komodo\Interlace\Adapter\Operator\OperatorResolver;
 use Komodo\Interlace\Association;
+use Komodo\Interlace\Enums\Op;
 use Komodo\Interlace\Interfaces\Connection;
 use Komodo\Interlace\Model;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
@@ -176,7 +177,9 @@ trait ModelStaticFunctions
             $m = new $m;
 
             $operator = OperatorResolver::get(static::class);
-            $params[ 'select' ] = 'countDistinct'; // set mod count
+            $params[ 'select' ] = [
+                'id' => Op::COUNT_DISTINCT,
+             ];
             $query = $operator->mountQuery($m->getTablename(), $params);
 
             /**
