@@ -21,8 +21,20 @@ abstract class Enum
 
     final public static function isValid($value)
     {
+
         $reflection = new \ReflectionClass(static::class);
+
+        if ($reflection->getConstant($value)) {
+            return true;
+        }
+
         $consts = $reflection->getConstants();
-        return in_array($value, $consts);
+
+        foreach ($consts as $var) {
+            if ($value === $var) {
+                return true;
+            }
+        }
+        return false;
     }
 }

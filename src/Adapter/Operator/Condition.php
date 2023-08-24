@@ -33,7 +33,6 @@ trait Condition
      */
     private $model;
 
-
     public function parseConditions($conditions)
     {
         if (!$conditions) {
@@ -56,7 +55,7 @@ trait Condition
         if (!$conditions) {
             return;
         }
-        $query = [];
+        $query = [  ];
         foreach ($conditions as $type => $condition) {
             switch (true) {
                 case $this->isProperty($type):
@@ -72,12 +71,11 @@ trait Condition
                     break;
 
                 default:
-                    throw new \InvalidArgumentException('Some data informed in the "where" parameter is invalid');
+                    throw new \InvalidArgumentException('Some data informed in the "where" parameter is invalid: ');
             }
         }
         return $query;
     }
-
 
     /**
      * parseDefaultCondition
@@ -94,21 +92,23 @@ trait Condition
 
     private function parsePropertyCondition($owner, $property, $condition)
     {
+
         $column = $this->builder->normalizeCollum($property, $owner);
-        $query = [];
+        $query = [  ];
         if (is_array($condition)) {
             foreach ($condition as $op => $value) {
                 if (!$this->isOperator($op)) {
                     throw new \InvalidArgumentException("The value entered for column '$column' is not a valid operator");
                 }
 
-                $query[] = $this->resolverCondition($op, $value, $column);
+                $query[  ] = $this->resolverCondition($op, $value, $column);
             }
         } else {
             if ($this->isOperator($condition)) {
-                $query[] = $this->resolverCondition($condition, '', $column); #Valid only for the cause: Collumn=> Op
+                var_dump($condition);
+                $query[  ] = $this->resolverCondition($condition, '', $column); #Valid only for the cause: Collumn=> Op
             } else {
-                $query[] = "$column = " . $this->convertValueToQuery($condition);
+                $query[  ] = "$column = " . $this->convertValueToQuery($condition);
             }
         }
         return $query;
@@ -117,18 +117,19 @@ trait Condition
     private function parseOperatorCondition($owner, $property, $condition)
     {
         $column = $this->builder->normalizeCollum($property, $owner);
-        $query = [];
+        $query = [  ];
+
         switch ($property) {
             case Op::AND:
                 $r = $this->processAllConditions($owner, $condition);
-                $query[] = "(" . implode(' AND ', $r) . ")";
+                $query[  ] = "(" . implode(' AND ', $r) . ")";
                 break;
             case Op::OR:
                 $r = $this->processAllConditions($owner, $condition);
-                $query[] = "(" . implode(' OR ', $r) . ")";
+                $query[  ] = "(" . implode(' OR ', $r) . ")";
                 break;
             default:
-                $query[] = $this->resolverCondition($property, $condition, $column);
+                $query[  ] = $this->resolverCondition($property, $condition, $column);
                 break;
         }
         return $query;
@@ -143,7 +144,14 @@ trait Condition
     private function isProperty($name)
     {
         $props = $this->model->getCollumns();
-        return in_array($name, $props);
+
+        foreach ($props as $key => $value) {
+            if ($key === $name) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function isOperator($name)
@@ -173,8 +181,6 @@ trait Condition
                 throw new \Exception("The number of informed values does not correspond to the type of operator. Expected quantity: $quant");
             }
         };
-
-
 
         switch ($op) {
             case Op::BETWEEN:
