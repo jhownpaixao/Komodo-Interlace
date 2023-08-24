@@ -70,6 +70,10 @@ trait Condition
                     $query = array_merge($this->parseArrayOfCondition($owner, $type, $condition), $query);
                     break;
 
+                case is_string($type) && is_array($condition): #?
+                    $query = array_merge($this->parseArrayOfCondition($owner, $type, $condition), $query);
+                    break;
+
                 default:
                     throw new \InvalidArgumentException('Some data informed in the "where" parameter is invalid: ' . $type);
             }
@@ -120,11 +124,11 @@ trait Condition
         $query = [  ];
 
         switch ($property) {
-            case Op:: and :
+            case Op::AND:
                 $r = $this->processAllConditions($owner, $condition);
                 $query[  ] = "(" . implode(' AND ', $r) . ")";
                 break;
-            case Op:: or :
+            case Op::OR:
                 $r = $this->processAllConditions($owner, $condition);
                 $query[  ] = "(" . implode(' OR ', $r) . ")";
                 break;
