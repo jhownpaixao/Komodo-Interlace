@@ -71,7 +71,7 @@ trait Condition
                     break;
 
                 case is_string($type) && is_array($condition): #? similar to 'isProperty', but it is used for associations
-                    $query = array_merge($this->parsePropertyCondition($owner, $type, $condition));
+                    $query = array_merge($this->parsePropertyCondition($owner, $type, $condition), $query);
                     break;
 
                 default:
