@@ -317,7 +317,6 @@ class OperatorResolver
 
         // ?Select structure
         self::mountSelect($select);
-        var_dump($this->builder->mount());
         return $this->builder->mount();
     }
 
