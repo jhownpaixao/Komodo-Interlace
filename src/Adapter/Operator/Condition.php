@@ -141,6 +141,9 @@ trait Condition
 
     public function mountConditions($owner, $condition)
     {
+        if (!$condition) {
+            return;
+        }
 
         $this->builder->addConditionQuery(implode(" AND ", $this->processAllConditions($owner, $condition)));
     }
