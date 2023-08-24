@@ -17,10 +17,10 @@ namespace Komodo\Interlace\Enums;
 |*/
 
 
-enum AssociationType: string
+abstract class AssociationType extends Enum
 {
-    case hasOne = "has_one";
-    case hasMany = "has_many";
-    case belongsTo = "blg_one";
-    case belongsToMany = "blg_many";
+    const HAS_ONE = "has_one";
+    const HAS_MANY = "has_many";
+    const BELONGS_TO = "blg_one";
+    const BELONGS_TO_MANY = "blg_many";
 }
