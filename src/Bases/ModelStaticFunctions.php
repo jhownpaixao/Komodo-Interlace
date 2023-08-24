@@ -108,7 +108,6 @@ trait ModelStaticFunctions
             $operator = OperatorResolver::get(static::class);
 
             $query = $operator->mountQuery($m->getTablename(), $params);
-            var_dump($query);
             /**
              * @var Connection
              */
