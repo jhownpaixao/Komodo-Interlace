@@ -20,6 +20,7 @@ use Error;
 use Exception;
 use Komodo\Interlace\Bases\ModelStaticFunctions;
 use Komodo\Interlace\Interfaces\Connection;
+use Komodo\Interlace\Providers\ConnectionProvider;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
 use Komodo\Logger\Logger;
 use ReflectionClass;
@@ -136,9 +137,13 @@ class Model
         $this->tablename = isset($setup[ 'tablename' ]) ? $setup[ 'tablename' ] : strtolower($thisClassName) . 's';
         $this->timestamp = isset($setup[ 'timestamp' ]) ? $setup[ 'timestamp' ] : true;
         $this->logger->register(static::class);
+        $connection = null;
 
-        // !Required
         if (!isset($setup[ 'connection' ])) {
+            $connection = ConnectionProvider::getDefaultConnection();
+        }
+        // !Required
+        if (!$connection) {
             throw new Exception("No connection reported for this entity: $thisClassName");
         } elseif (!$setup[ 'connection' ] instanceof Connection) {
             throw new Exception("The specified connection object is not compatible with this model. Expected: " . Connection::class);

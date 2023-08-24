@@ -45,6 +45,23 @@ final class ConnectionProvider
     }
 
     /**
+     * Method getConnection
+     *
+     * @param $name
+     *
+     * @return LocalConnection|RemoteConnection
+     */
+    public static function getDefaultConnection()
+    {
+        $connection = reset(self::$adapters);
+
+        if (!$connection) {
+            throw new \Exception('No connections found');
+        }
+        return $connection;
+    }
+
+    /**
      * Method setConnection
      *
      * @param string $name Name of connection

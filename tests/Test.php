@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Komodo\Configurator\ConfigurationProvider;
 use Komodo\Interlace\Adapter\MySQLConnection;
 use Komodo\Interlace\Interfaces\Repository;
 use Komodo\Interlace\Providers\ConnectionProvider;
@@ -14,18 +15,20 @@ $id = null;
 $cpf = null;
 class Test extends TestCase
 {
+    private function loadConnections()
+    {
+
+        $connectionsConfig = ConfigurationProvider::get('Database');
+        foreach ((array) $connectionsConfig as $name => $auth) {
+            $connection = MySQLConnection::create($auth->host, $auth->user, $auth->password, $auth->database);
+            ConnectionProvider::setConnection($name, $connection);
+        }
+    }
     private function init()
     {
-        $crmConnection = MySQLConnection::create('localhost', 'root', '', 'crm');
-        $this->assertInstanceOf(MySQLConnection::class, $crmConnection);
+        ConfigurationProvider::init(__DIR__ . '/Config');
 
-        $azcallConnection = MySQLConnection::create('localhost', 'root', '', 'azcall');
-        $this->assertInstanceOf(MySQLConnection::class, $azcallConnection);
-
-        ConnectionProvider::setConnections([
-            'crm' => $crmConnection,
-            'azcall' => $azcallConnection,
-         ]);
+        $this->loadConnections();
     }
 
     /* DDD */
