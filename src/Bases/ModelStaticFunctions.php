@@ -137,9 +137,6 @@ trait ModelStaticFunctions
     {
 
         try {
-            if (!array_key_exists('where', $params) || !$params[ 'where' ]) {
-                return [  ];
-            }
             $m = get_called_class();
             $m = new $m;
 
@@ -170,9 +167,6 @@ trait ModelStaticFunctions
     public static function count($params)
     {
         try {
-            if (!isset($params[ 'where' ]) || !$params[ 'where' ]) {
-                return 0;
-            }
             $m = get_called_class();
             $m = new $m;
 
