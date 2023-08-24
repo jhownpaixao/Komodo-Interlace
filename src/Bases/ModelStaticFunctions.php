@@ -57,7 +57,7 @@ trait ModelStaticFunctions
 
             return $model;
         } catch (Throwable $th) {
-            (new static)->getLogger()->error($th->getMessage());
+            (new static )->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
@@ -89,7 +89,7 @@ trait ModelStaticFunctions
 
             return self::sqlMapResult($r);
         } catch (Throwable $th) {
-            (new static)->getLogger()->error($th->getMessage());
+            (new static )->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
@@ -122,7 +122,7 @@ trait ModelStaticFunctions
 
             return $model;
         } catch (Throwable $th) {
-            (new static)->getLogger()->error($th->getMessage());
+            (new static )->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
@@ -156,7 +156,7 @@ trait ModelStaticFunctions
 
             return self::filterMultiSQLData($m, $r, $operator->getAssociations());
         } catch (Throwable $th) {
-            (new static)->getLogger()->error($th->getMessage());
+            (new static )->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
@@ -187,7 +187,7 @@ trait ModelStaticFunctions
 
             return intval($r);
         } catch (Throwable $th) {
-            (new static)->getLogger()->error($th->getMessage());
+            (new static )->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
@@ -221,7 +221,7 @@ trait ModelStaticFunctions
 
             return true;
         } catch (Throwable $th) {
-            (new static)->getLogger()->error($th->getMessage());
+            (new static )->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
@@ -257,7 +257,7 @@ trait ModelStaticFunctions
             ;
             return $m;
         } catch (Throwable $th) {
-            (new static)->getLogger()->error($th->getMessage());
+            (new static )->getLogger()->error($th->getMessage());
             throw $th;
         }
     }
@@ -411,10 +411,8 @@ trait ModelStaticFunctions
                     continue;
                 }
 
-                $associate = $associates[ $association ];
-                $class = $associate->getModelClassname();
                 if (array_filter($d)) {
-                    $associationGroup[ $d[ 'id' ] ] = new $class($d);
+                    $associationGroup[ $d[ 'id' ] ] = $d;
                 }
             }
         }
@@ -480,11 +478,8 @@ trait ModelStaticFunctions
                 if (isset($associationGroup[ $d[ 'id' ] ])) {
                     continue;
                 }
-
-                $associate = $associates[ $association ];
-                $class = $associate->getModelClassname();
                 if (array_filter($d)) {
-                    $associationGroup[ $d[ 'id' ] ] = new $class($d);
+                    $associationGroup[ $d[ 'id' ] ] = $d;
                 }
             }
         }
