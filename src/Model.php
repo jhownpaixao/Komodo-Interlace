@@ -237,7 +237,15 @@ class Model
             if ($reflProp instanceof ReflectionProperty) {
                 #Definir o valor à ser salvo
                 $v = $reflProp->getValue($this);
+                switch (gettype($v)) {
+                    case 'boolean':
+                        $v = intval($v);
+                        break;
 
+                    case 'array':
+                        $v = implode(',', $v);
+                        break;
+                }
                 #Keys para vincular
                 $bindValues[ ":$prop" ] = $v;
                 $sets[ $prop ] = ":$prop";

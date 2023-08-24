@@ -210,7 +210,7 @@ class MySQLConnection implements RemoteConnection
     }
     protected function valueTypeResolver(string $type, $var)
     {
-        if (!$var) {
+        if (is_null($var)) {
             return null;
         }
         switch ($type) {

@@ -281,6 +281,15 @@ abstract class RemoteRepository implements Repository
                 #Definir o valor à ser salvo
                 $v = $reflProp->getValue($entity);
 
+                switch (gettype($v)) {
+                    case 'boolean':
+                        $v = intval($v);
+                        break;
+
+                    case 'array':
+                        $v = implode(',', $v);
+                        break;
+                }
                 #Keys para vincular
                 $bindValues[ ":$prop" ] = $v;
                 $sets[ $prop ] = ":$prop";
@@ -307,7 +316,7 @@ abstract class RemoteRepository implements Repository
 
             $operator = OperatorResolver::get($this->entity);
             $params[ 'select' ] = [
-                'id' => Op::count,
+                'id' => Op::COUNT,
              ];
             $query = $operator->mountQuery($this->tablename, $params);
             $r = $this->connection->fetchColumm($query);
