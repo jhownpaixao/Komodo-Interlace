@@ -63,5 +63,5 @@ interface Connection
      * @param  Logger $logger
      * @return void
      */
-    public function setLogger($logger);
+    public function setLogger(&$logger);
 }
