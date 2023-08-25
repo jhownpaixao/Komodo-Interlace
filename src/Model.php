@@ -306,7 +306,7 @@ class Model
             return $r;
         } catch (Throwable $th) {
             $this->logger->error($th->getMessage());
-            return false;
+            throw $th;
             // throw new ResponseError($th->getMessage(), HTTPResponseCode::ITERNALERRO);
         }
     }
@@ -351,7 +351,7 @@ class Model
     /**
      * Retorna o repositório desta entidade
      *
-     * @return void
+     * @return Connection
      */
     public function getConnection()
     {
