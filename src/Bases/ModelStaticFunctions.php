@@ -22,6 +22,7 @@ use Komodo\Interlace\Enums\Op;
 use Komodo\Interlace\Interfaces\Connection;
 use Komodo\Interlace\Model;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
+use Komodo\Logger\Logger;
 use Throwable;
 
 trait ModelStaticFunctions
@@ -519,8 +520,13 @@ trait ModelStaticFunctions
         return array_values($r);
     }
 
+    /**
+     * logger
+     *
+     * @return Logger
+     */
     private static function logger()
     {
-        return static::logger();
+        return (new static )->getLogger();
     }
 }
