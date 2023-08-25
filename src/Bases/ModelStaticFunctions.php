@@ -107,7 +107,7 @@ trait ModelStaticFunctions
             $m = new $m;
 
             $operator = OperatorResolver::get(static::class);
-            $params['limit'] = 1;
+            $params[ 'limit' ] = 1;
             $query = $operator->mountQuery($m->getTablename(), $params);
             /**
              * @var Connection
@@ -153,6 +153,33 @@ trait ModelStaticFunctions
             };
 
             return self::filterMultiSQLData($m, $r, $operator->getAssociations());
+        } catch (Throwable $th) {
+            (new static )->getLogger()->error($th->getMessage());
+            throw $th;
+        }
+    }
+
+    /**
+     * @param array{where?: Where, select?: Select, associations?: Assoc } $params
+     *
+     * @return array| $this[]
+     */
+    public static function findData($params)
+    {
+
+        try {
+            $m = get_called_class();
+            $m = new $m;
+
+            $operator = OperatorResolver::get(static::class);
+            $query = $operator->mountQuery($m->getTablename(), $params);
+            /**
+             * @var Connection
+             */
+            $repository = $m->getConnection();
+            $r = $repository->fetchAll($query);
+
+            return $r;
         } catch (Throwable $th) {
             (new static )->getLogger()->error($th->getMessage());
             throw $th;
@@ -257,6 +284,12 @@ trait ModelStaticFunctions
             (new static )->getLogger()->error($th->getMessage());
             throw $th;
         }
+    }
+
+    public static function getProperties()
+    {
+        $m = new static();
+        return $m->getCollumns();
     }
 
     // #Private Methods
