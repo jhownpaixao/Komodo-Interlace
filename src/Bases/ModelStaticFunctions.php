@@ -107,7 +107,7 @@ trait ModelStaticFunctions
             $m = new $m;
 
             $operator = OperatorResolver::get(static::class);
-
+            $params['limit'] = 1;
             $query = $operator->mountQuery($m->getTablename(), $params);
             /**
              * @var Connection
