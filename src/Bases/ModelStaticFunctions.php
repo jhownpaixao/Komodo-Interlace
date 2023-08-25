@@ -525,7 +525,7 @@ trait ModelStaticFunctions
      *
      * @return Logger
      */
-    private static function logger()
+    public static function logger()
     {
         return (new static )->getLogger();
     }
