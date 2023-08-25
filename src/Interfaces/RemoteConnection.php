@@ -2,6 +2,8 @@
 
 namespace Komodo\Interlace\Interfaces;
 
+use Komodo\Logger\Logger;
+
 /*
 |-----------------------------------------------------------------------------
 | Komodo Interlace

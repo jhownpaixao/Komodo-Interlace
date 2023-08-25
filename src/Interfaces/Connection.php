@@ -9,13 +9,14 @@ namespace Komodo\Interlace\Interfaces;
 |
 | Desenvolvido por: Jhonnata Paixão (Líder de Projeto)
 | Iniciado em: 08/2023
-| Arquivo: Connection
-.php
+| Arquivo: Connection.php
 | Data da Criação Fri Aug 11 2023
 | Copyright (c) 2023
 |
 |-----------------------------------------------------------------------------
 |*/
+
+use Komodo\Logger\Logger;
 
 interface Connection
 {
@@ -55,4 +56,12 @@ interface Connection
      * @return string|int
      */
     public function lastInsertId();
+
+    /**
+     * setLogger
+     *
+     * @param  Logger $logger
+     * @return void
+     */
+    public function setLogger($logger);
 }

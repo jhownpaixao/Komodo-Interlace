@@ -160,7 +160,6 @@ class MySQLConnection implements RemoteConnection
             throw $th;
         }
     }
-
     public function execute($query, $params = [  ])
     {
         try {
@@ -176,6 +175,7 @@ class MySQLConnection implements RemoteConnection
     {
         return $this->connection->lastInsertId();
     }
+
     protected function connect(): void
     {
 
@@ -218,6 +218,7 @@ class MySQLConnection implements RemoteConnection
         }
         return $data;
     }
+
     protected function valueTypeResolver(string $type, $var)
     {
         if (is_null($var)) {
@@ -280,5 +281,10 @@ class MySQLConnection implements RemoteConnection
     public function setEntity($entity)
     {
         $this->tablename = $entity;
+    }
+
+    public function setLogger(&$logger)
+    {
+        $this->logger = &$logger;
     }
 }
