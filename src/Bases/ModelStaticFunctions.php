@@ -69,13 +69,13 @@ trait ModelStaticFunctions
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
             };
-            throw $th;
+            return null;
         }
     }
 
     /**
      *
-     * @return $this[]
+     * @return $this[]|
      */
     public static function getAll()
     {
@@ -103,7 +103,7 @@ trait ModelStaticFunctions
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
             };
-            throw $th;
+            return [  ];
         }
     }
 
@@ -138,7 +138,7 @@ trait ModelStaticFunctions
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
             };
-            throw $th;
+            return null;
         }
     }
 
@@ -171,7 +171,7 @@ trait ModelStaticFunctions
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
             };
-            throw $th;
+            return [  ];
         }
     }
 
@@ -200,7 +200,7 @@ trait ModelStaticFunctions
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
             };
-            throw $th;
+            return [  ];
         }
     }
 
@@ -268,7 +268,7 @@ trait ModelStaticFunctions
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
             };
-            throw $th;
+            return false;
         }
     }
 
@@ -306,7 +306,7 @@ trait ModelStaticFunctions
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
             };
-            throw $th;
+            return false;
         }
     }
 
