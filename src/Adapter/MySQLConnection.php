@@ -61,17 +61,14 @@ class MySQLConnection implements RemoteConnection
     protected $tablename;
     /** @var string */
     protected $charset;
-    /** @var Logger */
-    protected $logger;
 
-    protected function __construct(string $host, string $user, string $pass, string $dbname, string $charset, Logger $logger)
+    protected function __construct(string $host, string $user, string $pass, string $dbname, string $charset)
     {
         $this->host = $host;
         $this->user = $user;
         $this->pass = $pass;
         $this->dbname = $dbname;
         $this->charset = $charset;
-        $this->logger = $logger;
 
         $this->connect();
     }
@@ -86,11 +83,9 @@ class MySQLConnection implements RemoteConnection
      *
      * @return MySQLConnection
      */
-    public static function create($host, $user, $pass, $dbname, $charset = 'utf8', $logger = null)
+    public static function create($host, $user, $pass, $dbname, $charset = 'utf8')
     {
-        $logger = $logger ? clone $logger : new Logger;
-        $logger->register(static::class);
-        return new self($host, $user, $pass, $dbname, $charset, $logger);
+        return new self($host, $user, $pass, $dbname, $charset);
     }
 
     /**
@@ -156,7 +151,6 @@ class MySQLConnection implements RemoteConnection
 
             return $result;
         } catch (\Throwable $th) {
-            $this->logger->error($th->getMessage());
             throw $th;
         }
     }
@@ -166,7 +160,6 @@ class MySQLConnection implements RemoteConnection
             $statment = $this->connection->prepare($query);
             return $statment->execute($params);
         } catch (\Throwable $th) {
-            $this->logger->error($th->getMessage());
             throw $th;
         }
     }
@@ -189,7 +182,6 @@ class MySQLConnection implements RemoteConnection
 
             $this->connection = $pdo;
         } catch (\Throwable $th) {
-            $this->logger->error($th->getMessage());
             throw $th;
         }
     }
@@ -281,10 +273,5 @@ class MySQLConnection implements RemoteConnection
     public function setEntity($entity)
     {
         $this->tablename = $entity;
-    }
-
-    public function setLogger(&$logger)
-    {
-        $this->logger = &$logger;
     }
 }

@@ -16,8 +16,6 @@ namespace Komodo\Interlace\Interfaces;
 |-----------------------------------------------------------------------------
 |*/
 
-use Komodo\Logger\Logger;
-
 interface Connection
 {
     /**
@@ -56,12 +54,4 @@ interface Connection
      * @return string|int
      */
     public function lastInsertId();
-
-    /**
-     * setLogger
-     *
-     * @param  Logger $logger
-     * @return void
-     */
-    public function setLogger(&$logger);
 }

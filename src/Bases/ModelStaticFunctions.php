@@ -27,6 +27,13 @@ use Throwable;
 
 trait ModelStaticFunctions
 {
+    /** @var Logger */
+    private static $staticLogger;
+
+    public static function setLogger(Logger $logger)
+    {
+        self::$staticLogger = $logger;
+    }
     /**
      * @param string|int $pk
      *
@@ -59,7 +66,9 @@ trait ModelStaticFunctions
 
             return $model;
         } catch (Throwable $th) {
-            static::logger()->error($th->getMessage());
+            if (self::$staticLogger) {
+                self::$staticLogger->error($th->getMessage());
+            };
             throw $th;
         }
     }
@@ -91,7 +100,9 @@ trait ModelStaticFunctions
 
             return self::sqlMapResult($r);
         } catch (Throwable $th) {
-            static::logger()->error($th->getMessage());
+            if (self::$staticLogger) {
+                self::$staticLogger->error($th->getMessage());
+            };
             throw $th;
         }
     }
@@ -124,7 +135,9 @@ trait ModelStaticFunctions
 
             return $model;
         } catch (Throwable $th) {
-            static::logger()->error($th->getMessage());
+            if (self::$staticLogger) {
+                self::$staticLogger->error($th->getMessage());
+            };
             throw $th;
         }
     }
@@ -155,7 +168,9 @@ trait ModelStaticFunctions
 
             return self::filterMultiSQLData($m, $r, $operator->getAssociations());
         } catch (Throwable $th) {
-            static::logger()->error($th->getMessage());
+            if (self::$staticLogger) {
+                self::$staticLogger->error($th->getMessage());
+            };
             throw $th;
         }
     }
@@ -182,7 +197,9 @@ trait ModelStaticFunctions
 
             return $r;
         } catch (Throwable $th) {
-            static::logger()->error($th->getMessage());
+            if (self::$staticLogger) {
+                self::$staticLogger->error($th->getMessage());
+            };
             throw $th;
         }
     }
@@ -212,7 +229,9 @@ trait ModelStaticFunctions
 
             return intval($r);
         } catch (Throwable $th) {
-            static::logger()->error($th->getMessage());
+            if (self::$staticLogger) {
+                self::$staticLogger->error($th->getMessage());
+            };
             throw $th;
         }
     }
@@ -246,7 +265,9 @@ trait ModelStaticFunctions
 
             return true;
         } catch (Throwable $th) {
-            static::logger()->error($th->getMessage());
+            if (self::$staticLogger) {
+                self::$staticLogger->error($th->getMessage());
+            };
             throw $th;
         }
     }
@@ -282,7 +303,9 @@ trait ModelStaticFunctions
             ;
             return $m;
         } catch (Throwable $th) {
-            static::logger()->error($th->getMessage());
+            if (self::$staticLogger) {
+                self::$staticLogger->error($th->getMessage());
+            };
             throw $th;
         }
     }
@@ -520,13 +543,8 @@ trait ModelStaticFunctions
         return array_values($r);
     }
 
-    /**
-     * logger
-     *
-     * @return Logger
-     */
-    public static function logger()
+    public static function getLogger()
     {
-        return (new static )->getLogger();
+        return self::$staticLogger;
     }
 }

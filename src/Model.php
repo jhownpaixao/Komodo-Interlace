@@ -151,7 +151,6 @@ class Model
             throw new Exception("The specified connection object is not compatible with this model. Expected: " . Connection::class);
         }
         $this->repository = $connection;
-        $this->repository->setLogger($this->logger);
         $this->associations = $this->associate();
         $this->resolverProperties();
         $this->syncData($data, $associations);
@@ -364,7 +363,7 @@ class Model
      *
      * @return Logger
      */
-    public function getLogger()
+    public function logger()
     {
         return $this->logger;
     }
