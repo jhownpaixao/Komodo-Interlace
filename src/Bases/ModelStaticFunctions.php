@@ -225,7 +225,7 @@ trait ModelStaticFunctions
             $m = new $m;
 
             $operator = OperatorResolver::get(static::class);
-            $params[ 'select' ] = [
+            $params[ 'attributes' ] = [
                 'id' => Op::COUNT_DISTINCT,
              ];
             $query = $operator->mountQuery($m->getTablename(), $params);
