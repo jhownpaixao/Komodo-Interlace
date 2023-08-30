@@ -30,6 +30,8 @@ trait Attributes
      */
     protected $crudOperator = 'select';
 
+    protected $assigned = false;
+
     /**
      * mountAttributes
      *
@@ -58,19 +60,16 @@ trait Attributes
 
     public function mountSelect($attributes)
     {
-        if (!$attributes && $attributes != null) {
-            return $this->builder->select((array) $this->model->getProps())->from();
-        }
         foreach ($attributes as $collunm => $op) {
             switch ($op) {
                 case Op::COUNT:
-                    $this->builder->select([])->count($collunm)->from();
+                    $this->builder->select([  ])->count($collunm);
                     break;
                 case Op::DISTINCT:
-                    $this->builder->select([])->distinct($collunm)->from();
+                    $this->builder->select([  ])->distinct($collunm);
                     break;
                 case Op::COUNT_DISTINCT:
-                    $this->builder->select([])->countDistinc($collunm)->from();
+                    $this->builder->select([  ])->countDistinc($collunm);
                     break;
             }
         }

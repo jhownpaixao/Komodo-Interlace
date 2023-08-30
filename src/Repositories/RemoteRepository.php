@@ -133,7 +133,7 @@ abstract class RemoteRepository implements Repository
             $m = new $this->entity;
 
             $builder = new QueryBuilder($this->tablename);
-            $builder->select((array) $m->getProps())->from();
+            $builder->select((array) $m->getProps());
 
             if (!$r = $this->connection->fetchAll($builder->mount())) {
                 return [  ];
@@ -156,7 +156,6 @@ abstract class RemoteRepository implements Repository
              */
             $m = new $this->entity;
             [ $query, $operator ] = $this->getQueryOperator($params);
-
             $r = $this->connection->fetchAll($query);
 
             if (!$r) {
@@ -178,8 +177,8 @@ abstract class RemoteRepository implements Repository
         try {
             $m = new $this->entity;
             $builder = new QueryBuilder($this->tablename);
-            $builder->select((array) $m->getProps())->from()->where('id')->equal($pk)->limit(1);
-
+            $builder->select((array) $m->getProps())->where('id')->equal($pk)->limit(1);
+            var_dump($builder->mount());
             $r = $this->connection->fetch($builder->mount());
 
             if (!$r) {

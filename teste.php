@@ -4,8 +4,8 @@ include_once __DIR__ . '/vendor/autoload.php';
 
 use Komodo\Interlace\Adapter\MySQLConnection;
 use Komodo\Interlace\Enums\Op;
-use Tests\MVC\Models\Acionamento;
 use \Komodo\Interlace\Providers\ConnectionProvider;
+use Tests\MVC\Models\Cliente;
 
 $crmConnection = MySQLConnection::create('localhost', 'root', '', 'crm');
 
@@ -13,35 +13,10 @@ ConnectionProvider::setConnections([
     'crm' => $crmConnection,
  ]);
 
-/* $clientes = Cliente::findAll([
-'where' => [
-Op::OR => [
-["id" => 1],
-['id' => [Op::BETWEEN => [9941, 9945]]],
-],
-'updated_at' => Op::NOT_NULL
-],
-]);
+$clientes = Cliente::findAll([
+ ]);
+ var_dump($clientes);   
 
 foreach ($clientes as $cliente) {
-print_r($cliente->nome . PHP_EOL);
-} */
-
-$acionamento = Acionamento::findOne([
-    "where" => [
-        /*  "triggered" => 0, */
-        Op:: or => [
-            [ "ownerId" => '' ],
-            [ "ownerId" => 1 ],
-         ],
-     ],
-    /* "order" => [
-'created_at' => "DESC",
-],
-"association" => [
-"cliente" => [ 'required' => true ],
-], */
- ]);
-
-$acionamento =
-Acionamento::findOne([  ])->where('SSS')->eq(1)->and('sdas')->bewtween('sss', 'sdsd');
+    print_r($cliente->nome . PHP_EOL);
+}

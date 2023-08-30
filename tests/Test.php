@@ -177,7 +177,6 @@ class Test extends TestCase
     public function testMVCStaticDelete()
     {
         global $id;
-        var_dump($id);
         $delete = ModelsCliente::deleteAll([
             'where' => [
                 "id" => $id,

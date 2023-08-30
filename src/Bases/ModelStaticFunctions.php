@@ -50,7 +50,7 @@ trait ModelStaticFunctions
             $m = new $m;
 
             $builder = new QueryBuilder($m->getTablename());
-            $builder->select((array) $m->getProps())->from()->where('id')->equal($pk)->limit(1);
+            $builder->select((array) $m->getProps())->where('id')->equal($pk)->limit(1);
 
             /**
              * @var Connection
@@ -87,7 +87,7 @@ trait ModelStaticFunctions
             $m = new $m;
 
             $builder = new QueryBuilder($m->getTablename());
-            $builder->select((array) $m->getProps())->from();
+            $builder->select((array) $m->getProps());
 
             /**
              * @var Connection
