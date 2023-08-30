@@ -155,4 +155,34 @@ class Test extends TestCase
         $this->assertInstanceOf(ModelsCliente::class, $cliente);
         $this->assertTrue($cliente->delete());
     }
+
+    /* MVC STATIC */
+    public function testMVCStaticCreate()
+    {
+        $this->init();
+        global $id, $cpf;
+        $idd =  &$id;
+        $cpff =  &$cpf;
+
+        $cpff = date('His');
+
+        $cliente = ModelsCliente::create([
+            "nome" => 'Teste',
+            "cpf" => $cpf,
+         ]);
+        $this->assertInstanceOf(ModelsCliente::class, $cliente);
+        $this->assertEquals($cpf, $cliente->cpf);
+        $idd = $cliente->id;
+    }
+    public function testMVCStaticDelete()
+    {
+        global $id;
+        var_dump($id);
+        $delete = ModelsCliente::deleteAll([
+            'where' => [
+                "id" => $id,
+             ],
+         ]);
+        $this->assertTrue($delete);
+    }
 }

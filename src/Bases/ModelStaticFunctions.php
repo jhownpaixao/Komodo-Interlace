@@ -61,14 +61,16 @@ trait ModelStaticFunctions
             if (!$r) {
                 return null;
                 // throw new ResponseError('Registro não encontrado', 404);
-            };
+            }
+            ;
             $model = new $m($r);
 
             return $model;
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            };
+            }
+            ;
             return null;
         }
     }
@@ -96,13 +98,15 @@ trait ModelStaticFunctions
             if (!$r) {
                 return $r;
                 // throw new ResponseError('Nenhum registro encontrado', 404);
-            };
+            }
+            ;
 
             return self::sqlMapResult($r);
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            };
+            }
+            ;
             return [  ];
         }
     }
@@ -129,7 +133,8 @@ trait ModelStaticFunctions
 
             if (!$r) {
                 return null;
-            };
+            }
+            ;
             $data = self::filterSQLData($m, $r, $operator->getAssociations());
             $model = new $m($data[ 0 ], $data[ 1 ]);
 
@@ -137,7 +142,8 @@ trait ModelStaticFunctions
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            };
+            }
+            ;
             return null;
         }
     }
@@ -164,13 +170,15 @@ trait ModelStaticFunctions
 
             if (!$r) {
                 return $r;
-            };
+            }
+            ;
 
             return self::filterMultiSQLData($m, $r, $operator->getAssociations());
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            };
+            }
+            ;
             return [  ];
         }
     }
@@ -199,7 +207,8 @@ trait ModelStaticFunctions
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            };
+            }
+            ;
             return [  ];
         }
     }
@@ -231,7 +240,8 @@ trait ModelStaticFunctions
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            };
+            }
+            ;
             throw $th;
         }
     }
@@ -244,20 +254,22 @@ trait ModelStaticFunctions
     public static function deleteAll($params)
     {
         try {
+            if (!isset($params[ 'where' ])) {
+                throw new Error('Para excluir varios registros, é necessário informar condições');
+            }
             $m = get_called_class();
             $m = new $m;
             $tablename = $m->getTablename();
             $operator = OperatorResolver::get(static::class);
 
+            $params[ 'attributes' ] = 'delete';
             $query = $operator->mountQuery($tablename, $params);
-            $builder = new QueryBuilder($tablename);
-            $builder->delete();
-
+           
             /**
              * @var Connection
              */
             $repository = $m->getConnection();
-            $r = $repository->fetchAll($builder->mount() . " " . $query);
+            $r = $repository->execute($query);
 
             if (!$r) {
                 throw new Error('Nenhum registro encontrado');
@@ -305,7 +317,8 @@ trait ModelStaticFunctions
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            };
+            }
+            ;
             return false;
         }
     }

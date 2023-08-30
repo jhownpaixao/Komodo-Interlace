@@ -30,7 +30,7 @@ print_r($cliente->nome . PHP_EOL);
 $acionamento = Acionamento::findOne([
     "where" => [
         /*  "triggered" => 0, */
-        Op::OR => [
+        Op:: or => [
             [ "ownerId" => '' ],
             [ "ownerId" => 1 ],
          ],
@@ -42,3 +42,6 @@ $acionamento = Acionamento::findOne([
 "cliente" => [ 'required' => true ],
 ], */
  ]);
+
+$acionamento =
+Acionamento::findOne([  ])->where('SSS')->eq(1)->and('sdas')->bewtween('sss', 'sdsd');

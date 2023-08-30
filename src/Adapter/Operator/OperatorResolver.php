@@ -25,6 +25,7 @@ use Komodo\Interlace\QueryBuilder\QueryBuilder;
 class OperatorResolver
 {
     use Condition;
+    use Attributes;
     /**
      * model
      *
@@ -40,7 +41,7 @@ class OperatorResolver
     /**
      * @var AssociationParams
      */
-    private $associations = [  ];
+    private $associations = [];
 
     private function __construct(string $class)
     {
@@ -66,7 +67,7 @@ class OperatorResolver
             return '';
         }
 
-        $association = (object) $associations[ $include ];
+        $association = (object) $associations[$include];
         $model = new $association->entity;
         $table = $model->getTablename();
 
@@ -86,13 +87,14 @@ class OperatorResolver
     public function mountIncludes($includes)
     {
 
-        $i = [  ];
+        $i = [];
         if (is_array($includes)) {
             foreach ($includes as $key => $include) {
-                $i[  ] = self::createInclude($include);
+                $i[] = self::createInclude($include);
             }
-        } else {
-            $i[  ] = self::createInclude($includes);
+        }
+        else {
+            $i[] = self::createInclude($includes);
         }
 
         return $i;
@@ -130,25 +132,6 @@ class OperatorResolver
         $this->builder->offset($offset);
     }
 
-    public function mountSelect($selects)
-    {
-        if (!$selects) {
-            return $this->builder->select((array) $this->model->getProps())->from();
-        }
-        foreach ($selects as $collunm => $op) {
-            switch ($op) {
-                case Op::COUNT:
-                    $this->builder->select([  ])->count($collunm)->from();
-                    break;
-                case Op::DISTINCT:
-                    $this->builder->select([  ])->distinct($collunm)->from();
-                    break;
-                case Op::COUNT_DISTINCT:
-                    $this->builder->select([  ])->countDistinc($collunm)->from();
-                    break;
-            }
-        }
-    }
     /**
      * @param array $associations
      *
@@ -156,7 +139,7 @@ class OperatorResolver
      */
     public function mountAssociations($associations)
     {
-        $a = [  ];
+        $a = [];
         if (!$associations) {
             return;
         }
@@ -170,16 +153,17 @@ class OperatorResolver
             if (is_string($name)) {
                 $key = $name;
                 $data = $selected;
-            } else {
+            }
+            else {
                 $key = $selected;
-                $data = [  ];
+                $data = [];
             }
 
             if (!array_key_exists($key, $associates)) {
                 continue;
             }
 
-            $associate = $associates[ $key ];
+            $associate = $associates[$key];
             $model = $associate->getModel();
 
             $this->builder->select((array) $model->getProps(), $model->getTablename(), $key . ":");
@@ -200,7 +184,7 @@ class OperatorResolver
                     break;
             }
 
-            if (isset($data[ 'require' ]) && $data[ 'require' ]) {
+            if (isset($data['require']) && $data['require']) {
                 $joinType = 'inner';
             }
 
@@ -231,10 +215,10 @@ class OperatorResolver
             }
             $this->builder->on($k1)->equalColumm($k2, $tb2);
 
-            $attributes = array_key_exists('attributes', $data) ? $data[ 'attributes' ] : [  ];
-            $conditions = array_key_exists('where', $data) ? $data[ 'where' ] : [  ];
-            $group = array_key_exists('group', $data) ? $data[ 'group' ] : '';
-            $order = array_key_exists('order', $data) ? $data[ 'order' ] : [  ];
+            $attributes = array_key_exists('attributes', $data) ? $data['attributes'] : [];
+            $conditions = array_key_exists('where', $data) ? $data['where'] : [];
+            $group = array_key_exists('group', $data) ? $data['group'] : '';
+            $order = array_key_exists('order', $data) ? $data['order'] : [];
             // $count = isset($data[ 'count' ]) ? $data[ 'count' ] : false;
             // $includes = array_key_exists('include', $data) ? $data[ 'include' ] : [  ];
             // $association = array_key_exists('association', $data) ? $data[ 'association' ] : [  ];
@@ -261,37 +245,32 @@ class OperatorResolver
             self::mountGroup($group, $model->getTablename());
 
             // ?Limit
-            if (isset($data[ 'limit' ])) {
-                self::mountLimit($data[ 'limit' ]);
+            if (isset($data['limit'])) {
+                self::mountLimit($data['limit']);
             }
 
             // ?offset
-            if (isset($data[ 'offset' ])) {
-                self::mountOffset($data[ 'offset' ]);
+            if (isset($data['offset'])) {
+                self::mountOffset($data['offset']);
             }
         }
     }
 
     public function mountQuery($owner, $params)
     {
-
-        $select = isset($params[ 'select' ]) ? $params[ 'select' ] : [  ];
-        $attributes = array_key_exists('attributes', $params) ? $params[ 'attributes' ] : [  ];
-        $conditions = array_key_exists('where', $params) ? $params[ 'where' ] : [  ];
-        $includes = array_key_exists('include', $params) ? $params[ 'include' ] : [  ];
-        $association = array_key_exists('association', $params) ? $params[ 'association' ] : [  ];
-        $group = array_key_exists('group', $params) ? $params[ 'group' ] : '';
-        $order = array_key_exists('order', $params) ? $params[ 'order' ] : [  ];
-
-        // ?Attributes
-        self::createQueryColumms($attributes, $owner);
+        $attributes = array_key_exists('attributes', $params) ? $params['attributes'] : [];
+        $conditions = array_key_exists('where', $params) ? $params['where'] : [];
+        $includes = array_key_exists('include', $params) ? $params['include'] : [];
+        $association = array_key_exists('association', $params) ? $params['association'] : [];
+        $group = array_key_exists('group', $params) ? $params['group'] : '';
+        $order = array_key_exists('order', $params) ? $params['order'] : [];
 
         // ?Includes
         self::mountIncludes($includes);
 
         // ?Associations
-        $this->associations = is_array($association) ? $association : [ $association ];
-        self::mountAssociations(is_array($association) ? $association : [ $association ]);
+        $this->associations = is_array($association) ? $association : [$association];
+        self::mountAssociations(is_array($association) ? $association : [$association]);
 
         // ?Conditions
         if ($conditions) {
@@ -306,17 +285,18 @@ class OperatorResolver
         self::mountGroup($group, $owner);
 
         // ?Limit
-        if (isset($params[ 'limit' ])) {
-            self::mountLimit($params[ 'limit' ]);
+        if (isset($params['limit'])) {
+            self::mountLimit($params['limit']);
         }
 
         // ?offset
-        if (isset($params[ 'offset' ])) {
-            self::mountOffset($params[ 'offset' ]);
+        if (isset($params['offset'])) {
+            self::mountOffset($params['offset']);
         }
 
-        // ?Select structure
-        self::mountSelect($select);
+        // ?Attributes
+        self::mountAttributes($attributes);
+
         return $this->builder->mount();
     }
 
@@ -325,11 +305,11 @@ class OperatorResolver
      *
      * @return string
      */
-    public function createQueryColumms($columms = [  ], $table = '')
+    public function createQueryColumms($columms = [], $table = '')
     {
-        $cols = [  ];
+        $cols = [];
         foreach ($columms as $columm) {
-            $cols[  ] = self::fullCollumName($columm, $table);
+            $cols[] = self::fullCollumName($columm, $table);
         }
         return implode(',', $cols);
     }
