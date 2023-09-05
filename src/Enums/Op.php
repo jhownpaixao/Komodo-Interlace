@@ -43,6 +43,7 @@ abstract class Op extends Enum
 
     const OR = "%s OR %s";
     const AND = "%s AND %s";
+    const DATE = "DATE(%s)";
 
     const DISTINCT = "DISTINCT(%s)";
     const COUNT = "COUNT(%s)";
