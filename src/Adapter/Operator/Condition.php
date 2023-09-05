@@ -135,7 +135,7 @@ trait Condition
 
             case Op::DATE:
                 $r = $this->processAllConditions($owner, $condition);
-                $query[  ] = preg_replace('/`(.*?)`/i', 'DATE(${0})', implode(' AND ', $r));
+                $query[  ] = preg_replace('/`(.*?\.`.*?)`/', 'DATE(${0})', implode(' AND ', $r));
                 break;
 
             default:

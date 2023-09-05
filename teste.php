@@ -26,9 +26,9 @@ foreach ($clientes as $cliente) {
     print_r($cliente->nome . PHP_EOL);
 } */
 
-$TESTE = "`date.ee`='sdsdsd' AND `sdsds`='sdsds'";
+$TESTE = "`date`.`ee`='sdsdsd' AND `sdsds`.`sdsd`='sdsds'";
 
 
 
 
-var_dump(preg_replace('/`(.*?)`/i', 'DATE(${0})', $TESTE));
+var_dump(preg_replace("/`(.*?\.`.*?)`/", 'DATE(${0})', $TESTE));
