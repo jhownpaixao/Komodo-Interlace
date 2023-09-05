@@ -127,10 +127,17 @@ trait Condition
                 $r = $this->processAllConditions($owner, $condition);
                 $query[  ] = "(" . implode(' AND ', $r) . ")";
                 break;
+
             case Op::OR:
                 $r = $this->processAllConditions($owner, $condition);
                 $query[  ] = "(" . implode(' OR ', $r) . ")";
                 break;
+
+            case Op::DATE:
+                $r = $this->processAllConditions($owner, $condition);
+                $query[  ] = preg_replace('/`(.*?)`/i', 'DATE(${0})', implode(' AND ', $r));
+                break;
+
             default:
                 $query[  ] = $this->resolverCondition($property, $condition, $column);
                 break;
@@ -225,11 +232,6 @@ trait Condition
                 break;
 
             case Op::END:
-                $requireTraitValues('string');
-                $v = sprintf($op, $collunm, $value);
-                break;
-
-            case Op::DATE:
                 $requireTraitValues('string');
                 $v = sprintf($op, $collunm, $value);
                 break;
