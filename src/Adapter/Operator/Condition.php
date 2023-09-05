@@ -229,6 +229,11 @@ trait Condition
                 $v = sprintf($op, $collunm, $value);
                 break;
 
+            case Op::DATE:
+                $requireTraitValues('string');
+                $v = sprintf($op, $collunm, $value);
+                break;
+
             default:
                 $requireTraitValues('string');
                 $value = $this->convertValueToQuery($value);
