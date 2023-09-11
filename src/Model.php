@@ -425,6 +425,9 @@ class Model
 
             case 'array':
                 return implode(',', $value);
+
+            default:
+                return $value;
         }
     }
 }
