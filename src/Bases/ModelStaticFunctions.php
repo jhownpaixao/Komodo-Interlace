@@ -134,8 +134,8 @@ trait ModelStaticFunctions
             if (!$r) {
                 return null;
             }
-            ;
-            $data = self::filterSQLData($m, $r, $operator->getAssociations());
+
+            $data = self::filterSQLData($m, $r[0], $operator->getAssociations());
             $model = new $m($data[ 0 ], $data[ 1 ]);
 
             return $model;

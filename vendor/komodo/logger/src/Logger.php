@@ -14,7 +14,7 @@ ________________________________________________________________________________
  *
  *********************************************************************************************/
 use Komodo\Logger\LogData;
-use Komodo\Logger\Transports\HTMLTransport;
+use Komodo\Logger\Transports\FakeTransport;
 use Komodo\Logger\Transports\Transport;
 
 class Logger
@@ -40,7 +40,7 @@ class Logger
      */
     public function __construct($transport = null)
     {
-        $this->transport = $transport ?: new HTMLTransport('pre');
+        $this->transport = $transport ?: new FakeTransport();
     }
 
     public function register($name)
