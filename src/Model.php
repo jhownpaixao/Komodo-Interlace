@@ -31,7 +31,6 @@ use Throwable;
  * @property string $created_at
  * @property string $updated_at
  */
-#[\AllowDynamicProperties ]
 class Model
 {
     use ModelStaticFunctions;
@@ -215,12 +214,7 @@ class Model
     {
 
         if ($data) {
-            foreach ($data as $prop => $value) {
-                if (!in_array($prop, (array) $this->props)) {
-                    continue;
-                }
-                $this->{$prop} = $value;
-            }
+            $this->setValues($data);
         }
 
         $refl = new ReflectionClass($this);
@@ -235,16 +229,8 @@ class Model
 
             if ($reflProp instanceof ReflectionProperty) {
                 #Definir o valor à ser salvo
-                $v = $reflProp->getValue($this);
-                switch (gettype($v)) {
-                    case 'boolean':
-                        $v = intval($v);
-                        break;
+                $v = $this->parseVal($reflProp->getValue($this));
 
-                    case 'array':
-                        $v = implode(',', $v);
-                        break;
-                }
                 #Keys para vincular
                 $bindValues[ ":$prop" ] = $v;
                 $sets[ $prop ] = ":$prop";
@@ -254,9 +240,56 @@ class Model
         try {
             $builder = new QueryBuilder($this->tablename);
             $builder->update()->set($sets)->where('id')->equal($this->id);
-            $r = $this->repository->execute($builder->mount(), $bindValues);
+            return $this->repository->execute($builder->mount(), $bindValues);
+        } catch (Throwable $th) {
+            $this->logger->error($th->getMessage());
+            throw $th;
+        }
+    }
 
-            return $r;
+    /**
+     * Atualiza a database desta entidade apenas com as colunas ainda vázias com base nos valores atuais,
+     * e/ou fornecidos no parametro $data
+     *
+     * @param array<string,string|int> $data Dados para completar,* nesta atualização
+     *
+     * @return bool
+     */
+    public function complete($data)
+    {
+
+        if ($data) {
+            $this->setValues($data);
+        }
+
+        $refl = new ReflectionClass($this);
+        $bindValues = [  ];
+        $sets = [  ];
+
+        foreach ($this->props as $prop) {
+            if (in_array($prop, [ 'updated_at', 'created_at', 'id' ])) {
+                continue;
+            }
+
+            $reflProp = $refl->getProperty($prop);
+
+            if ($reflProp instanceof ReflectionProperty) {
+                if (null !== $reflProp->getValue($this)) {
+                    continue;
+                }
+
+                $v = $this->parseVal($data[ $prop ]);
+
+                #Keys para vincular
+                $bindValues[ ":$prop" ] = $v;
+                $sets[ $prop ] = ":$prop";
+            }
+        }
+
+        try {
+            $builder = new QueryBuilder($this->tablename);
+            $builder->update()->set($sets)->where('id')->equal($this->id);
+            return $this->repository->execute($builder->mount(), $bindValues);
         } catch (Throwable $th) {
             $this->logger->error($th->getMessage());
             throw $th;
@@ -366,5 +399,32 @@ class Model
     public function logger()
     {
         return $this->logger;
+    }
+
+    /**
+     * setValues
+     *
+     * @param  array<string,mixed> $values
+     * @return void
+     */
+    private function setValues($values)
+    {
+        foreach ($values as $prop => $value) {
+            if (!in_array($prop, (array) $this->props)) {
+                continue;
+            }
+            $this->{$prop} = $value;
+        }
+    }
+
+    private function parseVal($value)
+    {
+        switch (gettype($value)) {
+            case 'boolean':
+                return intval($value);
+
+            case 'array':
+                return implode(',', $value);
+        }
     }
 }
