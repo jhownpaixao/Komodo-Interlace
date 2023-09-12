@@ -480,8 +480,27 @@ trait ModelStaticFunctions
                 $d = str_replace($association . ':', '', json_encode($d));
                 $d = json_decode($d, true);
 
+                switch ($contract->getType()) {
+                    case 'has_one':
+                        $ka = $contract->getForeingkey();
+                        $kb = $contract->getOringinKey();
+                        break;
+                    case 'has_many':
+                        $ka = $contract->getForeingkey();
+                        $kb = $contract->getOringinKey();
+                        break;
+                    case 'blg_one':
+                        $ka = $contract->getOringinKey();
+                        $kb = $contract->getForeingkey();
+                        break;
+                    case 'blg_many':
+                        $ka = $contract->getOringinKey();
+                        $kb = $contract->getForeingkey();
+                        break;
+                }
+
                 //#não pertence
-                if ($d[ $contract->getOringinKey() ] !== $a[ $contract->getForeingkey() ]) {
+                if ($d[ $ka ] !== $a[ $kb ]) {
                     continue;
                 }
 
