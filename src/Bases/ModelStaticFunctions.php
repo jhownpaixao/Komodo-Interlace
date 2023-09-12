@@ -135,7 +135,7 @@ trait ModelStaticFunctions
                 return null;
             }
 
-            $data = self::filterSQLData($m, $r[0], $operator->getAssociations());
+            $data = self::filterSQLData($m, $r, $operator->getAssociations());
             $model = new $m($data[ 0 ], $data[ 1 ]);
 
             return $model;
@@ -264,7 +264,7 @@ trait ModelStaticFunctions
 
             $params[ 'attributes' ] = 'delete';
             $query = $operator->mountQuery($tablename, $params);
-           
+
             /**
              * @var Connection
              */
@@ -442,11 +442,16 @@ trait ModelStaticFunctions
      */
     private static function filterSQLData($model, $sqldata, $associations = [  ])
     {
+
         $a = [  ];
         $assoc = [  ];
         if (!$associations) {
             return [ $sqldata[ 0 ], [  ] ];
         }
+
+        $a = array_filter($sqldata[ 0 ], function ($v, $k) {
+            return !strpos($k, ":") !== false;
+        }, ARRAY_FILTER_USE_BOTH);
 
         /**
          * @var  Association[]
@@ -454,15 +459,17 @@ trait ModelStaticFunctions
         $associates = $model->getAssociations();
 
         foreach ($associations as $association => $conditions) {
+            $association = is_int($association) ? $conditions : $association;
             if (!isset($associates[ $association ])) {
                 continue;
             }
+            $contract = $associates[ $association ];
 
             // #se vazio, inicializa
             if (!isset($assoc[ $association ])) {
                 $assoc[ $association ] = [  ];
             }
-            $associationGroup =  &$assoc[ $association ];
+            $associationGroup = &$assoc[ $association ];
 
             // #processa
             foreach ($sqldata as $row) {
@@ -472,6 +479,11 @@ trait ModelStaticFunctions
 
                 $d = str_replace($association . ':', '', json_encode($d));
                 $d = json_decode($d, true);
+
+                //#não pertence
+                if ($d[ $contract->getOringinKey() ] !== $a[ $contract->getForeingkey() ]) {
+                    continue;
+                }
 
                 // #ja está includído
                 if (isset($associationGroup[ $d[ 'id' ] ])) {
@@ -483,9 +495,6 @@ trait ModelStaticFunctions
                 }
             }
         }
-        $a = array_filter($sqldata[ 0 ], function ($v, $k) use ($association) {
-            return !strpos($k, ":") !== false;
-        }, ARRAY_FILTER_USE_BOTH);
 
         return [ $a, $assoc ];
     }
@@ -527,12 +536,12 @@ trait ModelStaticFunctions
                     continue;
                 }
 
-                $modelGroup =  &$assoc[ $a[ 'id' ] ];
+                $modelGroup = &$assoc[ $a[ 'id' ] ];
 
                 if (!isset($modelGroup[ $association ])) {
                     $modelGroup[ $association ] = [  ];
                 }
-                $associationGroup =  &$modelGroup[ $association ];
+                $associationGroup = &$modelGroup[ $association ];
 
                 $d = array_filter($row, function ($v, $k) use ($association) {
                     return str_starts_with($k, $association);
