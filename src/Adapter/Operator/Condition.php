@@ -154,6 +154,15 @@ trait Condition
         $this->builder->addConditionQuery(implode(" AND ", $this->processAllConditions($owner, $condition)));
     }
 
+    public function mountOnConditions($owner, $condition)
+    {
+        if (!$condition) {
+            return;
+        }
+
+        $this->builder->addOnCondition(implode(" AND ", $this->processAllConditions($owner, $condition)));
+    }
+
     private function isProperty($name)
     {
         $props = $this->model->getCollumns();

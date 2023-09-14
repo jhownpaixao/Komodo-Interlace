@@ -15,7 +15,6 @@ namespace Komodo\Interlace\QueryBuilder;
 |-----------------------------------------------------------------------------
 |*/
 
-
 trait JoinQuery
 {
 
@@ -67,12 +66,18 @@ trait JoinQuery
         return $this;
     }
 
-    public function on($columm)
+    public function on($columm, $table = '')
     {
-        $columm = $this->normalizeCollum($columm);
+        $columm = $this->normalizeCollum($columm, $table);
         $condition = "ON $columm";
         $this->query->join[  ] = $condition;
         $this->lastCondition = $condition;
+        return $this;
+    }
+
+    public function addOnCondition($query)
+    {
+        $this->query->join[  ] = $query;
         return $this;
     }
 }

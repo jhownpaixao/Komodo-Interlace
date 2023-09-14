@@ -135,8 +135,9 @@ class OperatorResolver
      *
      * @return void
      */
-    public function mountAssociations($associations)
+    public function mountAssociations($associations, $ownerModel = null)
     {
+        $ownerModel = $ownerModel ?: $this->model;
         $a = [  ];
         if (!$associations) {
             return;
@@ -145,7 +146,7 @@ class OperatorResolver
         /**
          * @var  Association[]
          */
-        $associates = $this->model->getAssociations();
+        $associates = $ownerModel->getAssociations();
 
         foreach ($associations as $name => $selected) {
             if (is_string($name)) {
@@ -185,7 +186,6 @@ class OperatorResolver
                 $joinType = 'inner';
             }
 
-            $tb1 = '';
             $k1 = '';
             $tb2 = '';
             $k2 = '';
@@ -210,7 +210,8 @@ class OperatorResolver
                     $k2 = $associate->getOringinKey();
                     break;
             }
-            $this->builder->on($k1)->equalColumm($k2, $tb2);
+
+            $this->builder->on($k1, $ownerModel->getTablename())->equalColumm($k2, $tb2);
 
             $attributes = array_key_exists('attributes', $data) ? $data[ 'attributes' ] : [  ];
             $conditions = array_key_exists('where', $data) ? $data[ 'where' ] : [  ];
@@ -218,11 +219,12 @@ class OperatorResolver
             $order = array_key_exists('order', $data) ? $data[ 'order' ] : [  ];
             // $count = isset($data[ 'count' ]) ? $data[ 'count' ] : false;
             // $includes = array_key_exists('include', $data) ? $data[ 'include' ] : [  ];
-            // $association = array_key_exists('association', $data) ? $data[ 'association' ] : [  ];
+            $association = array_key_exists('association', $data) ? $data[ 'association' ] : [  ];
+
             // ?Conditions
             if ($conditions) {
                 $this->builder->and();
-                self::mountConditions($model->getTablename(), $conditions);
+                self::mountOnConditions($model->getTablename(), $conditions);
             }
 
             // ?Attributes
@@ -232,8 +234,8 @@ class OperatorResolver
             // self::mountIncludes($includes);
 
             // ?Associations
-            // $this->associations = is_array($association) ? $association : [ $association ];
-            // self::mountAssociations(is_array($association) ? $association : [ $association ]);
+            $this->associations = is_array($association) ? $association : [ $association ];
+            self::mountAssociations(is_array($association) ? $association : [ $association ], $model);
 
             // ?Order
             self::mountOrder($order, $model->getTablename());
