@@ -246,7 +246,6 @@ trait Condition
                 break;
 
             default:
-                $requireTraitValues('string');
                 $value = $this->convertValueToQuery($value);
                 $v = sprintf($op, $collunm, $value);
                 break;
