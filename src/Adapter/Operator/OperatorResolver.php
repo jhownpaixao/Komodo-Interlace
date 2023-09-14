@@ -234,7 +234,7 @@ class OperatorResolver
             // self::mountIncludes($includes);
 
             // ?Associations
-            $this->associations = is_array($association) ? $association : [ $association ];
+            $this->associations = array_merge($this->associations, is_array($association) ? $association : [ $association ]);
             self::mountAssociations(is_array($association) ? $association : [ $association ], $model);
 
             // ?Order
@@ -268,7 +268,7 @@ class OperatorResolver
         self::mountIncludes($includes);
 
         // ?Associations
-        $this->associations = is_array($association) ? $association : [ $association ];
+        $this->associations = array_merge($this->associations, is_array($association) ? $association : [ $association ]);
         self::mountAssociations(is_array($association) ? $association : [ $association ]);
 
         // ?Conditions
