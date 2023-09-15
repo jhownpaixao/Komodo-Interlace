@@ -258,10 +258,6 @@ class Model
     public function complete($data)
     {
 
-        if ($data) {
-            $this->setValues($data);
-        }
-
         $refl = new ReflectionClass($this);
         $bindValues = [  ];
         $sets = [  ];
@@ -274,12 +270,14 @@ class Model
             $reflProp = $refl->getProperty($prop);
 
             if ($reflProp instanceof ReflectionProperty) {
-                if (null !== $reflProp->getValue($this)) {
+                if ($reflProp->getValue($this) != null) {
                     continue;
                 }
 
+                if (!isset($data[ $prop ])) {
+                    continue;
+                }
                 $v = $this->parseVal($data[ $prop ]);
-
                 #Keys para vincular
                 $bindValues[ ":$prop" ] = $v;
                 $sets[ $prop ] = ":$prop";
@@ -287,9 +285,14 @@ class Model
         }
 
         try {
-            $builder = new QueryBuilder($this->tablename);
-            $builder->update()->set($sets)->where('id')->equal($this->id);
-            return $this->repository->execute($builder->mount(), $bindValues);
+            if ($sets) {
+                $builder = new QueryBuilder($this->tablename);
+                $builder->update()->set($sets)->where('id')->equal($this->id);
+                var_dump($builder->mount(), $bindValues);
+                return $this->repository->execute($builder->mount(), $bindValues);
+            } else {
+                return true;
+            }
         } catch (Throwable $th) {
             $this->logger->error($th->getMessage());
             throw $th;
