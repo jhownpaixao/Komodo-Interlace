@@ -288,7 +288,6 @@ class Model
             if ($sets) {
                 $builder = new QueryBuilder($this->tablename);
                 $builder->update()->set($sets)->where('id')->equal($this->id);
-                var_dump($builder->mount(), $bindValues);
                 return $this->repository->execute($builder->mount(), $bindValues);
             } else {
                 return true;
