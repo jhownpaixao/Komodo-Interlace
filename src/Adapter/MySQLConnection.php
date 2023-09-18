@@ -158,7 +158,10 @@ class MySQLConnection implements RemoteConnection
     {
         try {
             $statment = $this->connection->prepare($query);
-            return $statment->execute($params);
+            if ($statment->execute($params) && $statment->rowCount() > 0) {
+                return true;
+            }
+            return false;
         } catch (\Throwable $th) {
             throw $th;
         }
