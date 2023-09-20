@@ -273,13 +273,15 @@ trait ModelStaticFunctions
 
             if (!$r) {
                 throw new Error('Nenhum registro encontrado');
-            };
+            }
+            ;
 
             return true;
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            };
+            }
+            ;
             return false;
         }
     }
@@ -443,13 +445,13 @@ trait ModelStaticFunctions
     private static function filterSQLData($model, $sqldata, $associations = [  ])
     {
 
-        $a = [  ];
+        $entityData = [  ];
         $assoc = [  ];
         if (!$associations) {
             return [ $sqldata[ 0 ], [  ] ];
         }
 
-        $a = array_filter($sqldata[ 0 ], function ($v, $k) {
+        $entityData = array_filter($sqldata[ 0 ], function ($v, $k) {
             return !strpos($k, ":") !== false;
         }, ARRAY_FILTER_USE_BOTH);
 
@@ -463,59 +465,65 @@ trait ModelStaticFunctions
             if (!isset($associates[ $association ])) {
                 continue;
             }
+
+            //# informações de contrato
             $contract = $associates[ $association ];
 
-            // #se vazio, inicializa
+            switch ($contract->getType()) {
+                case 'has_one':
+                    $foreingkey = $contract->getForeingkey();
+                    $oringinKey = $contract->getOringinKey();
+                    break;
+                case 'has_many':
+                    $foreingkey = $contract->getForeingkey();
+                    $oringinKey = $contract->getOringinKey();
+                    break;
+                case 'blg_one':
+                    $foreingkey = $contract->getOringinKey();
+                    $oringinKey = $contract->getForeingkey();
+                    break;
+                case 'blg_many':
+                    $foreingkey = $contract->getOringinKey();
+                    $oringinKey = $contract->getForeingkey();
+                    break;
+            }
+
+            // #Verifica se ja está definido em $assoc;
             if (!isset($assoc[ $association ])) {
                 $assoc[ $association ] = [  ];
             }
+            //#seleciona em uma unica variavel os dados desta associação em $assoc;
             $associationGroup = &$assoc[ $association ];
 
-            // #processa
+            // #processa os dados
             foreach ($sqldata as $row) {
-                $d = array_filter($row, function ($v, $k) use ($association) {
+
+                #processo de conversão dos nomes das colunas
+                $rowData = array_filter($row, function ($v, $k) use ($association) {
                     return str_starts_with($k, $association);
                 }, ARRAY_FILTER_USE_BOTH);
-
-                $d = str_replace($association . ':', '', json_encode($d));
-                $d = json_decode($d, true);
-
-                switch ($contract->getType()) {
-                    case 'has_one':
-                        $ka = $contract->getForeingkey();
-                        $kb = $contract->getOringinKey();
-                        break;
-                    case 'has_many':
-                        $ka = $contract->getForeingkey();
-                        $kb = $contract->getOringinKey();
-                        break;
-                    case 'blg_one':
-                        $ka = $contract->getOringinKey();
-                        $kb = $contract->getForeingkey();
-                        break;
-                    case 'blg_many':
-                        $ka = $contract->getOringinKey();
-                        $kb = $contract->getForeingkey();
-                        break;
-                }
+                $rowData = str_replace($association . ':', '', json_encode($rowData));
+                $rowData = json_decode($rowData, true);
 
                 //#não pertence
-                if ($d[ $ka ] !== $a[ $kb ]) {
+                if ((int) $rowData[ $foreingkey ] !== (int) $entityData[ $oringinKey ]) {
                     continue;
                 }
 
                 // #ja está includído
-                if (isset($associationGroup[ $d[ 'id' ] ])) {
+                if (isset($associationGroup[ $rowData[ 'id' ] ])) {
                     continue;
                 }
 
-                if (array_filter($d)) {
-                    $associationGroup[ $d[ 'id' ] ] = $d;
+                if (array_filter($rowData)) {
+                    $associationGroup[ $rowData[ 'id' ] ] = $rowData;
                 }
+
             }
+            self::console($associationGroup);
         }
 
-        return [ $a, $assoc ];
+        return [ $entityData, $assoc ];
     }
 
     /**
