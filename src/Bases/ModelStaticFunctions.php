@@ -520,7 +520,6 @@ trait ModelStaticFunctions
                 }
 
             }
-            self::console($associationGroup);
         }
 
         return [ $entityData, $assoc ];
