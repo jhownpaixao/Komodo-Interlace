@@ -198,7 +198,7 @@ class Model
             return $r;
         } catch (Throwable $th) {
             $this->logger->error($th->getMessage());
-            throw $th;
+            return false;
         }
     }
 
@@ -243,7 +243,7 @@ class Model
             return $this->repository->execute($builder->mount(), $bindValues);
         } catch (Throwable $th) {
             $this->logger->error($th->getMessage());
-            throw $th;
+            return false;
         }
     }
 
@@ -294,7 +294,7 @@ class Model
             }
         } catch (Throwable $th) {
             $this->logger->error($th->getMessage());
-            throw $th;
+            return false;
         }
     }
 
@@ -341,8 +341,7 @@ class Model
             return $r;
         } catch (Throwable $th) {
             $this->logger->error($th->getMessage());
-            throw $th;
-            // throw new ResponseError($th->getMessage(), HTTPResponseCode::ITERNALERRO);
+            return false;
         }
     }
 

@@ -95,7 +95,7 @@ class MySQLConnection implements RemoteConnection
      * @param  array<string,string> $params
      * @return mixed
      */
-    public function fetch($query, $params = [  ])
+    public function fetch($query, $params = [])
     {
         return $this->query($query, $params, 'fetch', PDO::FETCH_ASSOC);
     }
@@ -107,7 +107,7 @@ class MySQLConnection implements RemoteConnection
      * @param  array<string,string> $params
      * @return mixed
      */
-    public function fetchAll($query, $params = [  ])
+    public function fetchAll($query, $params = [])
     {
         return $this->query($query, $params, 'fetchAll', PDO::FETCH_ASSOC);
     }
@@ -119,7 +119,7 @@ class MySQLConnection implements RemoteConnection
      * @param  array<string,string> $params
      * @return mixed
      */
-    public function fetchColumm($query, $params = [  ])
+    public function fetchColumm($query, $params = [])
     {
         return $this->query($query, $params, 'fetchColumn', PDO::FETCH_ASSOC);
     }
@@ -143,7 +143,7 @@ class MySQLConnection implements RemoteConnection
             if (!$statment->execute($params)) {
                 return null;
             }
-            if ($result = call_user_func_array([ $statment, $fetchMethod ], [  ])) {
+            if ($result = call_user_func_array([$statment, $fetchMethod], [])) {
                 if (is_array($result)) {
                     $result = $this->convertTypes($statment, $result);
                 }
@@ -154,12 +154,14 @@ class MySQLConnection implements RemoteConnection
             throw $th;
         }
     }
-    public function execute($query, $params = [  ])
+    public function execute($query, $params = [])
     {
         try {
             $statment = $this->connection->prepare($query);
             if ($statment->execute($params) && $statment->rowCount() > 0) {
                 return true;
+            } elseif ($statment->rowCount() < 1) {
+                throw new \Exception('Nenhum dado foi modificado');
             }
             return false;
         } catch (\Throwable $th) {
@@ -203,12 +205,12 @@ class MySQLConnection implements RemoteConnection
             if (false === $i || !$meta = $statment->getColumnMeta($i)) {
                 continue;
             }
-            $type = $meta[ 'native_type' ];
+            $type = $meta['native_type'];
 
             if (is_array($value)) {
-                $data[ $column ] = $this->convertTypes($statment, $value);
+                $data[$column] = $this->convertTypes($statment, $value);
             } else {
-                $data[ $column ] = $this->valueTypeResolver($type, $value);
+                $data[$column] = $this->valueTypeResolver($type, $value);
             }
         }
         return $data;
@@ -229,7 +231,7 @@ class MySQLConnection implements RemoteConnection
             case static::TYPE_FLOAT:
                 return (float) $var;
             case static::TYPE_DOUBLE:
-                return (double) $var;
+                return (float) $var;
             case static::TYPE_TIMESTAMP:
                 return date('d/m/Y H:i:s', strtotime($var));
             case static::TYPE_LONGLONG:
