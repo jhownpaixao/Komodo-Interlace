@@ -1,4 +1,5 @@
 <?php
+
 namespace Komodo\Interlace\Adapter\Operator;
 
 /*
@@ -41,7 +42,7 @@ class OperatorResolver
     /**
      * @var AssociationParams
      */
-    private $associations = [  ];
+    private $associations = [];
 
     private function __construct(string $class)
     {
@@ -67,7 +68,7 @@ class OperatorResolver
             return '';
         }
 
-        $association = (object) $associations[ $include ];
+        $association = (object) $associations[$include];
         $model = new $association->entity;
         $table = $model->getTablename();
 
@@ -86,13 +87,13 @@ class OperatorResolver
     public function mountIncludes($includes)
     {
 
-        $i = [  ];
+        $i = [];
         if (is_array($includes)) {
             foreach ($includes as $key => $include) {
-                $i[  ] = self::createInclude($include);
+                $i[] = self::createInclude($include);
             }
         } else {
-            $i[  ] = self::createInclude($includes);
+            $i[] = self::createInclude($includes);
         }
 
         return $i;
@@ -138,7 +139,7 @@ class OperatorResolver
     public function mountAssociations($associations, $ownerModel = null)
     {
         $ownerModel = $ownerModel ?: $this->model;
-        $a = [  ];
+        $a = [];
         if (!$associations) {
             return;
         }
@@ -154,14 +155,14 @@ class OperatorResolver
                 $data = $selected;
             } else {
                 $key = $selected;
-                $data = [  ];
+                $data = [];
             }
 
             if (!array_key_exists($key, $associates)) {
                 continue;
             }
 
-            $associate = $associates[ $key ];
+            $associate = $associates[$key];
             $model = $associate->getModel();
 
             $this->builder->select((array) $model->getProps(), $model->getTablename(), $key . ":");
@@ -182,11 +183,12 @@ class OperatorResolver
                     break;
             }
 
-            if (isset($data[ 'require' ]) && $data[ 'require' ]) {
+            if (isset($data['require']) && $data['require']) {
                 $joinType = 'inner';
             }
 
             $k1 = '';
+            $tb1 = '';
             $tb2 = '';
             $k2 = '';
 
@@ -194,32 +196,35 @@ class OperatorResolver
                 case 'inner':
                     $this->builder->innerJoin($model->getTablename());
                     $k1 = $associate->getOringinKey();
-                    $tb2 = $model->getTablename();
                     $k2 = $associate->getForeingkey();
+                    $tb1 = $model->getTablename();
+                    $tb2 = $ownerModel->getTablename();
                     break;
                 case 'left':
                     $this->builder->leftJoin($model->getTablename());
                     $k1 = $associate->getOringinKey();
-                    $tb2 = $model->getTablename();
                     $k2 = $associate->getForeingkey();
+                    $tb1 = $model->getTablename();
+                    $tb2 = $ownerModel->getTablename();
                     break;
                 case 'right':
                     $this->builder->rightJoin($model->getTablename());
                     $k1 = $associate->getForeingkey();
-                    $tb2 = $model->getTablename();
                     $k2 = $associate->getOringinKey();
+                    $tb1 = $ownerModel->getTablename();
+                    $tb2 = $model->getTablename();
                     break;
             }
 
-            $this->builder->on($k1, $ownerModel->getTablename())->equalColumm($k2, $tb2);
+            $this->builder->on($k1, $tb1)->equalColumm($k2, $tb2);
 
-            $attributes = array_key_exists('attributes', $data) ? $data[ 'attributes' ] : [  ];
-            $conditions = array_key_exists('where', $data) ? $data[ 'where' ] : [  ];
-            $group = array_key_exists('group', $data) ? $data[ 'group' ] : '';
-            $order = array_key_exists('order', $data) ? $data[ 'order' ] : [  ];
+            $attributes = array_key_exists('attributes', $data) ? $data['attributes'] : [];
+            $conditions = array_key_exists('where', $data) ? $data['where'] : [];
+            $group = array_key_exists('group', $data) ? $data['group'] : '';
+            $order = array_key_exists('order', $data) ? $data['order'] : [];
             // $count = isset($data[ 'count' ]) ? $data[ 'count' ] : false;
             // $includes = array_key_exists('include', $data) ? $data[ 'include' ] : [  ];
-            $association = array_key_exists('association', $data) ? $data[ 'association' ] : [  ];
+            $association = array_key_exists('association', $data) ? $data['association'] : [];
 
             // ?Conditions
             if ($conditions) {
@@ -234,8 +239,8 @@ class OperatorResolver
             // self::mountIncludes($includes);
 
             // ?Associations
-            $this->associations = array_merge($this->associations, is_array($association) ? $association : [ $association ]);
-            self::mountAssociations(is_array($association) ? $association : [ $association ], $model);
+            $this->associations = array_merge($this->associations, is_array($association) ? $association : [$association]);
+            self::mountAssociations(is_array($association) ? $association : [$association], $model);
 
             // ?Order
             self::mountOrder($order, $model->getTablename());
@@ -244,32 +249,32 @@ class OperatorResolver
             self::mountGroup($group, $model->getTablename());
 
             // ?Limit
-            if (isset($data[ 'limit' ])) {
-                self::mountLimit($data[ 'limit' ]);
+            if (isset($data['limit'])) {
+                self::mountLimit($data['limit']);
             }
 
             // ?offset
-            if (isset($data[ 'offset' ])) {
-                self::mountOffset($data[ 'offset' ]);
+            if (isset($data['offset'])) {
+                self::mountOffset($data['offset']);
             }
         }
     }
 
     public function mountQuery($owner, $params)
     {
-        $attributes = array_key_exists('attributes', $params) ? $params[ 'attributes' ] : [  ];
-        $conditions = array_key_exists('where', $params) ? $params[ 'where' ] : [  ];
-        $includes = array_key_exists('include', $params) ? $params[ 'include' ] : [  ];
-        $association = array_key_exists('association', $params) ? $params[ 'association' ] : [  ];
-        $group = array_key_exists('group', $params) ? $params[ 'group' ] : '';
-        $order = array_key_exists('order', $params) ? $params[ 'order' ] : [  ];
+        $attributes = array_key_exists('attributes', $params) ? $params['attributes'] : [];
+        $conditions = array_key_exists('where', $params) ? $params['where'] : [];
+        $includes = array_key_exists('include', $params) ? $params['include'] : [];
+        $association = array_key_exists('association', $params) ? $params['association'] : [];
+        $group = array_key_exists('group', $params) ? $params['group'] : '';
+        $order = array_key_exists('order', $params) ? $params['order'] : [];
 
         // ?Includes
         self::mountIncludes($includes);
 
         // ?Associations
-        $this->associations = array_merge($this->associations, is_array($association) ? $association : [ $association ]);
-        self::mountAssociations(is_array($association) ? $association : [ $association ]);
+        $this->associations = array_merge($this->associations, is_array($association) ? $association : [$association]);
+        self::mountAssociations(is_array($association) ? $association : [$association]);
 
         // ?Conditions
         if ($conditions) {
@@ -284,13 +289,13 @@ class OperatorResolver
         self::mountGroup($group, $owner);
 
         // ?Limit
-        if (isset($params[ 'limit' ])) {
-            self::mountLimit($params[ 'limit' ]);
+        if (isset($params['limit'])) {
+            self::mountLimit($params['limit']);
         }
 
         // ?offset
-        if (isset($params[ 'offset' ])) {
-            self::mountOffset($params[ 'offset' ]);
+        if (isset($params['offset'])) {
+            self::mountOffset($params['offset']);
         }
 
         // ?Attributes
@@ -308,11 +313,11 @@ class OperatorResolver
      *
      * @return string
      */
-    public function createQueryColumms($columms = [  ], $table = '')
+    public function createQueryColumms($columms = [], $table = '')
     {
-        $cols = [  ];
+        $cols = [];
         foreach ($columms as $columm) {
-            $cols[  ] = self::fullCollumName($columm, $table);
+            $cols[] = self::fullCollumName($columm, $table);
         }
         return implode(',', $cols);
     }
