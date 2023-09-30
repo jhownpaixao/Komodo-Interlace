@@ -197,15 +197,15 @@ class OperatorResolver
                     $this->builder->innerJoin($model->getTablename());
                     $k1 = $associate->getOringinKey();
                     $k2 = $associate->getForeingkey();
-                    $tb1 = $model->getTablename();
                     $tb2 = $ownerModel->getTablename();
+                    $tb1 = $model->getTablename();
                     break;
                 case 'left':
                     $this->builder->leftJoin($model->getTablename());
                     $k1 = $associate->getOringinKey();
                     $k2 = $associate->getForeingkey();
-                    $tb1 = $model->getTablename();
-                    $tb2 = $ownerModel->getTablename();
+                    $tb1 = $ownerModel->getTablename();
+                    $tb2 = $model->getTablename();
                     break;
                 case 'right':
                     $this->builder->rightJoin($model->getTablename());

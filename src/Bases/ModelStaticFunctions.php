@@ -107,7 +107,7 @@ trait ModelStaticFunctions
                 self::$staticLogger->error($th->getMessage());
             }
             ;
-            return [  ];
+            return [];
         }
     }
 
@@ -136,7 +136,7 @@ trait ModelStaticFunctions
             }
 
             $data = self::filterSQLData($m, $r, $operator->getAssociations());
-            $model = new $m($data[ 0 ], $data[ 1 ]);
+            $model = new $m($data[0], $data[1]);
 
             return $model;
         } catch (Throwable $th) {
@@ -179,7 +179,7 @@ trait ModelStaticFunctions
                 self::$staticLogger->error($th->getMessage());
             }
             ;
-            return [  ];
+            return [];
         }
     }
 
@@ -209,7 +209,7 @@ trait ModelStaticFunctions
                 self::$staticLogger->error($th->getMessage());
             }
             ;
-            return [  ];
+            return [];
         }
     }
 
@@ -225,9 +225,9 @@ trait ModelStaticFunctions
             $m = new $m;
 
             $operator = OperatorResolver::get(static::class);
-            $params[ 'attributes' ] = [
+            $params['attributes'] = [
                 'id' => Op::COUNT_DISTINCT,
-             ];
+            ];
             $query = $operator->mountQuery($m->getTablename(), $params);
 
             /**
@@ -254,7 +254,7 @@ trait ModelStaticFunctions
     public static function deleteAll($params)
     {
         try {
-            if (!isset($params[ 'where' ])) {
+            if (!isset($params['where'])) {
                 throw new Error('Para excluir varios registros, é necessário informar condições');
             }
             $m = get_called_class();
@@ -262,7 +262,7 @@ trait ModelStaticFunctions
             $tablename = $m->getTablename();
             $operator = OperatorResolver::get(static::class);
 
-            $params[ 'attributes' ] = 'delete';
+            $params['attributes'] = 'delete';
             $query = $operator->mountQuery($tablename, $params);
 
             /**
@@ -292,7 +292,7 @@ trait ModelStaticFunctions
      *
      * @return $this|array|false
      */
-    public static function create($data, $associations = [  ])
+    public static function create($data, $associations = [])
     {
         if (!$data) {
             return false;
@@ -312,7 +312,7 @@ trait ModelStaticFunctions
                 return [
                     'model' => $m,
                     'associations' => $assoc,
-                 ];
+                ];
             }
             ;
             return $m;
@@ -337,13 +337,13 @@ trait ModelStaticFunctions
      *
      * @return Model[] | $this[]
      */
-    private static function sqlMapResult($data, $associations = [  ])
+    private static function sqlMapResult($data, $associations = [])
     {
 
         return array_map(function ($var) use ($associations) {
             $child = get_called_class();
-            $f = self::filterSQLData(new $child, [ $var ], $associations);
-            $model = new $child($f[ 0 ], $f[ 1 ]);
+            $f = self::filterSQLData(new $child, [$var], $associations);
+            $model = new $child($f[0], $f[1]);
             $associations = self::findAssociationData(new $child, $var, $associations);
             return new $child($var, $associations);
         }, $data);
@@ -358,7 +358,7 @@ trait ModelStaticFunctions
      */
     private static function findAssociationData($model, $sqldata, $associations)
     {
-        $a = [  ];
+        $a = [];
         if (!$associations) {
             return $a;
         }
@@ -374,24 +374,24 @@ trait ModelStaticFunctions
                 $data = $selected;
             } else {
                 $key = $selected;
-                $data = [  ];
+                $data = [];
             }
 
             if (!array_key_exists($key, $associates)) {
                 continue;
             }
 
-            $associate = $associates[ $key ];
+            $associate = $associates[$key];
             $model = $associate->getModel();
 
             if (array_key_exists("where", $data)) {
-                $data[ 'where' ] = [  ];
+                $data['where'] = [];
             }
 
             // #This condition guarantees the authenticity of the association
-            $data[ 'where' ][ $associate->getForeingkey() ] = $sqldata[ $associate->getOringinKey() ];
+            $data['where'][$associate->getForeingkey()] = $sqldata[$associate->getOringinKey()];
 
-            $a[ $key ] = $model->findAll($data);
+            $a[$key] = $model->findAll($data);
         }
 
         return $a;
@@ -406,7 +406,7 @@ trait ModelStaticFunctions
      */
     private static function createAssociation($oringinModel, $associations)
     {
-        $a = [  ];
+        $a = [];
         if (!$associations) {
             return $a;
         }
@@ -421,12 +421,12 @@ trait ModelStaticFunctions
                 continue;
             }
 
-            $association = $associates[ $name ];
+            $association = $associates[$name];
             $model = $association->getModel();
 
             // #This condition guarantees the authenticity of the association
-            $data[ $association->getForeingkey() ] = $oringinModel->{$association->getOringinKey()};
-            $a[ $name ] = $model->create($data);
+            $data[$association->getForeingkey()] = $oringinModel->{$association->getOringinKey()};
+            $a[$name] = $model->create($data);
         }
 
         return $a;
@@ -442,16 +442,16 @@ trait ModelStaticFunctions
      *
      * @return Model[]
      */
-    private static function filterSQLData($model, $sqldata, $associations = [  ])
+    private static function filterSQLData($model, $sqldata, $associations = [])
     {
 
-        $entityData = [  ];
-        $assoc = [  ];
+        $entityData = [];
+        $assoc = [];
         if (!$associations) {
-            return [ $sqldata[ 0 ], [  ] ];
+            return [$sqldata[0], []];
         }
 
-        $entityData = array_filter($sqldata[ 0 ], function ($v, $k) {
+        $entityData = array_filter($sqldata[0], function ($v, $k) {
             return !strpos($k, ":") !== false;
         }, ARRAY_FILTER_USE_BOTH);
 
@@ -462,12 +462,12 @@ trait ModelStaticFunctions
 
         foreach ($associations as $association => $conditions) {
             $association = is_int($association) ? $conditions : $association;
-            if (!isset($associates[ $association ])) {
+            if (!isset($associates[$association])) {
                 continue;
             }
 
             //# informações de contrato
-            $contract = $associates[ $association ];
+            $contract = $associates[$association];
 
             switch ($contract->getType()) {
                 case 'has_one':
@@ -489,15 +489,14 @@ trait ModelStaticFunctions
             }
 
             // #Verifica se ja está definido em $assoc;
-            if (!isset($assoc[ $association ])) {
-                $assoc[ $association ] = [  ];
+            if (!isset($assoc[$association])) {
+                $assoc[$association] = [];
             }
             //#seleciona em uma unica variavel os dados desta associação em $assoc;
-            $associationGroup = &$assoc[ $association ];
+            $associationGroup = &$assoc[$association];
 
             // #processa os dados
             foreach ($sqldata as $row) {
-
                 #processo de conversão dos nomes das colunas
                 $rowData = array_filter($row, function ($v, $k) use ($association) {
                     return str_starts_with($k, $association);
@@ -506,23 +505,22 @@ trait ModelStaticFunctions
                 $rowData = json_decode($rowData, true);
 
                 //#não pertence
-                if ((int) $rowData[ $foreingkey ] !== (int) $entityData[ $oringinKey ]) {
+                if ((int) $rowData[$foreingkey] !== (int) $entityData[$oringinKey]) {
                     continue;
                 }
 
                 // #ja está includído
-                if (isset($associationGroup[ $rowData[ 'id' ] ])) {
+                if (isset($associationGroup[$rowData['id']])) {
                     continue;
                 }
 
                 if (array_filter($rowData)) {
-                    $associationGroup[ $rowData[ 'id' ] ] = $rowData;
+                    $associationGroup[$rowData['id']] = $rowData;
                 }
-
             }
         }
 
-        return [ $entityData, $assoc ];
+        return [$entityData, $assoc];
     }
 
     /**
@@ -535,10 +533,10 @@ trait ModelStaticFunctions
      *
      * @return Model[]
      */
-    private static function filterMultiSQLData($model, $sqldata, $associations = [  ])
+    private static function filterMultiSQLData($model, $sqldata, $associations = [])
     {
-        $r = [  ];
-        $assoc = [  ];
+        $r = [];
+        $assoc = [];
         $child = get_called_class();
         /**
          * @var  Association[]
@@ -550,24 +548,24 @@ trait ModelStaticFunctions
                 return !strpos($k, ":") !== false;
             }, ARRAY_FILTER_USE_BOTH);
 
-            if (array_filter($a) || !isset($associationGroup[ $a[ 'id' ] ])) {
-                $r[ $a[ 'id' ] ] = $a;
+            if (array_filter($a) || !isset($associationGroup[$a['id']])) {
+                $r[$a['id']] = $a;
             }
 
-            if (!isset($assoc[ $a[ 'id' ] ])) {
-                $assoc[ $a[ 'id' ] ] = [  ];
+            if (!isset($assoc[$a['id']])) {
+                $assoc[$a['id']] = [];
             }
             foreach ($associations as $association => $conditions) {
-                if (!isset($associates[ $association ])) {
+                if (!isset($associates[$association])) {
                     continue;
                 }
 
-                $modelGroup = &$assoc[ $a[ 'id' ] ];
+                $modelGroup = &$assoc[$a['id']];
 
-                if (!isset($modelGroup[ $association ])) {
-                    $modelGroup[ $association ] = [  ];
+                if (!isset($modelGroup[$association])) {
+                    $modelGroup[$association] = [];
                 }
-                $associationGroup = &$modelGroup[ $association ];
+                $associationGroup = &$modelGroup[$association];
 
                 $d = array_filter($row, function ($v, $k) use ($association) {
                     return str_starts_with($k, $association);
@@ -577,16 +575,16 @@ trait ModelStaticFunctions
                 $d = json_decode($d, true);
 
                 // #ja está includído
-                if (isset($associationGroup[ $d[ 'id' ] ])) {
+                if (isset($associationGroup[$d['id']])) {
                     continue;
                 }
                 if (array_filter($d)) {
-                    $associationGroup[ $d[ 'id' ] ] = $d;
+                    $associationGroup[$d['id']] = $d;
                 }
             }
         }
         $r = array_map(function ($var) use ($assoc, $child) {
-            return new $child($var, $assoc[ $var[ 'id' ] ]);
+            return new $child($var, $assoc[$var['id']]);
         }, $r);
         return array_values($r);
     }
