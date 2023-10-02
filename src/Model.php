@@ -49,7 +49,7 @@ class Model
     /** @var Logger */
     protected $logger;
 
-    public function __construct($data = [  ], $associations = [  ])
+    public function __construct($data = [], $associations = [])
     {
         $this->init($data, $associations);
     }
@@ -76,8 +76,8 @@ class Model
             if (!array_key_exists($association, $this->associations)) {
                 continue;
             }
-            $associate = $this->associations[ $association ];
-            $this->{$association} = [  ];
+            $associate = $this->associations[$association];
+            $this->{$association} = [];
 
             foreach ($list as $data) {
                 $class = $associate->getModelClassname();
@@ -87,7 +87,7 @@ class Model
                         $this->{$association} = $model;
                         break;
                     case 'has_many':
-                        $this->{$association}[  ] = $model;
+                        $this->{$association}[] = $model;
                         break;
 
                     case 'blg_one':
@@ -95,7 +95,7 @@ class Model
                         break;
 
                     case 'blg_many':
-                        $this->{$association}[  ] = $model;
+                        $this->{$association}[] = $model;
                         break;
                 }
             }
@@ -132,16 +132,16 @@ class Model
 
         $thisClassName = (new ReflectionClass($this))->getShortName();
 
-        $this->logger = isset($setup[ 'logger' ]) && $setup[ 'logger' ] instanceof Logger ? clone $setup[ 'logger' ] : new Logger;
-        $this->tablename = isset($setup[ 'tablename' ]) ? $setup[ 'tablename' ] : strtolower($thisClassName) . 's';
-        $this->timestamp = isset($setup[ 'timestamp' ]) ? $setup[ 'timestamp' ] : true;
+        $this->logger = isset($setup['logger']) && $setup['logger'] instanceof Logger ? clone $setup['logger'] : new Logger;
+        $this->tablename = isset($setup['tablename']) ? $setup['tablename'] : strtolower($thisClassName) . 's';
+        $this->timestamp = isset($setup['timestamp']) ? $setup['timestamp'] : true;
         $this->logger->register(static::class);
         $connection = null;
 
-        if (!isset($setup[ 'connection' ])) {
+        if (!isset($setup['connection'])) {
             $connection = ConnectionProvider::getDefaultConnection();
         } else {
-            $connection = $setup[ 'connection' ];
+            $connection = $setup['connection'];
         }
         // !Required
         if (!$connection) {
@@ -162,7 +162,7 @@ class Model
      */
     protected function associate()
     {
-        return [  ];
+        return [];
     }
 
     /**
@@ -172,7 +172,7 @@ class Model
      */
     protected function setup()
     {
-        return [  ];
+        return [];
     }
 
     // #Public Methods
@@ -210,7 +210,7 @@ class Model
      *
      * @return bool
      */
-    public function update($data = [  ])
+    public function update($data = [])
     {
 
         if ($data) {
@@ -218,10 +218,10 @@ class Model
         }
 
         $refl = new ReflectionClass($this);
-        $bindValues = [  ];
-        $sets = [  ];
+        $bindValues = [];
+        $sets = [];
         foreach ($this->props as $prop) {
-            if (in_array($prop, [ 'updated_at', 'created_at', 'id' ])) {
+            if (in_array($prop, ['updated_at', 'created_at', 'id'])) {
                 continue;
             }
 
@@ -232,8 +232,8 @@ class Model
                 $v = $this->parseVal($reflProp->getValue($this));
 
                 #Keys para vincular
-                $bindValues[ ":$prop" ] = $v;
-                $sets[ $prop ] = ":$prop";
+                $bindValues[":$prop"] = $v;
+                $sets[$prop] = ":$prop";
             }
         }
 
@@ -259,11 +259,11 @@ class Model
     {
 
         $refl = new ReflectionClass($this);
-        $bindValues = [  ];
-        $sets = [  ];
+        $bindValues = [];
+        $sets = [];
 
         foreach ($this->props as $prop) {
-            if (in_array($prop, [ 'updated_at', 'created_at', 'id' ])) {
+            if (in_array($prop, ['updated_at', 'created_at', 'id'])) {
                 continue;
             }
 
@@ -274,13 +274,13 @@ class Model
                     continue;
                 }
 
-                if (!isset($data[ $prop ])) {
+                if (!isset($data[$prop])) {
                     continue;
                 }
-                $v = $this->parseVal($data[ $prop ]);
+                $v = $this->parseVal($data[$prop]);
                 #Keys para vincular
-                $bindValues[ ":$prop" ] = $v;
-                $sets[ $prop ] = ":$prop";
+                $bindValues[":$prop"] = $v;
+                $sets[$prop] = ":$prop";
             }
         }
 
@@ -310,11 +310,11 @@ class Model
             return false;
         }
         $refl = new ReflectionClass($this);
-        $bindValues = [  ];
-        $sets = [  ];
+        $bindValues = [];
+        $sets = [];
 
         foreach ($this->props as $prop) {
-            if (in_array($prop, [ 'updated_at', 'created_at', 'id' ])) {
+            if (in_array($prop, ['updated_at', 'created_at', 'id'])) {
                 continue;
             }
             $reflProp = $refl->getProperty($prop);
@@ -324,8 +324,8 @@ class Model
                 $v = $reflProp->getValue($this);
 
                 #Keys para vincular
-                $bindValues[ ":$prop" ] = $v;
-                $sets[ $prop ] = ":$prop";
+                $bindValues[":$prop"] = $v;
+                $sets[$prop] = ":$prop";
             }
         }
 

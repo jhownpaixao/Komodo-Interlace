@@ -61,8 +61,6 @@
       "italic": false
     }
   ],
-  "phpdoc-generator.constructorWithType": "void",
-  "phpdoc-generator.returnUndefinedType": "mixed",
   "fileHeaderComment.parameter": {
     "*": {
       "commentbegin": "/*",
