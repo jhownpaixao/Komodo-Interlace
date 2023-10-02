@@ -233,17 +233,17 @@ class MySQLConnection implements RemoteConnection
             case static::TYPE_DOUBLE:
                 return (float) $var;
             case static::TYPE_TIMESTAMP:
-                return date('d/m/Y H:i:s', strtotime($var));
+                return date('Y-m-d H:i:s', strtotime($var));
             case static::TYPE_LONGLONG:
                 return $var;
             case static::TYPE_INT24:
                 return $var;
             case static::TYPE_DATE:
-                return date('d/m/Y', strtotime($var));
+                return date('Y-m-d', strtotime($var));
             case static::TYPE_TIME:
                 return date('H:i:s', strtotime($var));
             case static::TYPE_DATETIME:
-                return date('d/m/Y H:i:s', strtotime($var));
+                return date('Y-m-d H:i:s', strtotime($var));
             case static::TYPE_YEAR:
                 return (int) $var;
             case static::TYPE_ENUM:
