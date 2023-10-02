@@ -1,4 +1,5 @@
 <?php
+
 namespace Komodo\Interlace\Bases;
 
 /*
@@ -61,16 +62,14 @@ trait ModelStaticFunctions
             if (!$r) {
                 return null;
                 // throw new ResponseError('Registro não encontrado', 404);
-            }
-            ;
+            };
             $model = new $m($r);
 
             return $model;
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            }
-            ;
+            };
             return null;
         }
     }
@@ -98,15 +97,13 @@ trait ModelStaticFunctions
             if (!$r) {
                 return $r;
                 // throw new ResponseError('Nenhum registro encontrado', 404);
-            }
-            ;
+            };
 
             return self::sqlMapResult($r);
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            }
-            ;
+            };
             return [];
         }
     }
@@ -142,8 +139,7 @@ trait ModelStaticFunctions
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            }
-            ;
+            };
             return null;
         }
     }
@@ -170,15 +166,13 @@ trait ModelStaticFunctions
 
             if (!$r) {
                 return $r;
-            }
-            ;
+            };
 
             return self::filterMultiSQLData($m, $r, $operator->getAssociations());
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            }
-            ;
+            };
             return [];
         }
     }
@@ -207,8 +201,7 @@ trait ModelStaticFunctions
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            }
-            ;
+            };
             return [];
         }
     }
@@ -240,8 +233,7 @@ trait ModelStaticFunctions
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            }
-            ;
+            };
             throw $th;
         }
     }
@@ -273,15 +265,13 @@ trait ModelStaticFunctions
 
             if (!$r) {
                 throw new Error('Nenhum registro encontrado');
-            }
-            ;
+            };
 
             return true;
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            }
-            ;
+            };
             return false;
         }
     }
@@ -296,16 +286,15 @@ trait ModelStaticFunctions
     {
         if (!$data) {
             return false;
-        }
-        ;
+        };
         try {
             $c = get_called_class();
             $m = new $c($data);
             $p = $m->persist();
             if (!$p) {
+                self::$staticLogger->error($m->logger()->getLastMessage());
                 return $p;
-            }
-            ;
+            };
 
             if ($associations) {
                 $assoc = self::createAssociation($m, $associations);
@@ -313,14 +302,12 @@ trait ModelStaticFunctions
                     'model' => $m,
                     'associations' => $assoc,
                 ];
-            }
-            ;
+            };
             return $m;
         } catch (Throwable $th) {
             if (self::$staticLogger) {
                 self::$staticLogger->error($th->getMessage());
-            }
-            ;
+            };
             return false;
         }
     }
