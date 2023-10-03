@@ -189,7 +189,8 @@ trait Condition
      */
     private function isProperty($name, $owner)
     {
-        $model = !is_string($owner) ? $owner : $this->model;
+       
+        $model = is_string($owner) || is_null($owner) ? $this->model : $owner;
         $props = $model->getCollumns();
 
         foreach ($props as $key => $value) {
