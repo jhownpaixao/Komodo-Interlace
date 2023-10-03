@@ -2,7 +2,9 @@
 
 namespace Komodo\Interlace\Adapter\Operator;
 
+use Komodo\Interlace\Entity;
 use Komodo\Interlace\Enums\Op;
+use Komodo\Interlace\Model;
 use Komodo\Interlace\QueryBuilder\QueryBuilder;
 
 /*
@@ -45,20 +47,27 @@ trait Condition
 
     /**
      *
-     * @param string $owner
+     * @param Model|Entity|string $owner
      * @param array<string,string|int|bool|array<string,string|int|bool>> $conditions
      *
      * @return array|null
      */
     public function processAllConditions($owner, $conditions)
     {
+        if (!is_string($owner)) {
+            $model = $owner;
+            $owner = $model->getTablename();
+        } else {
+            $model = null;
+        }
+
         if (!$conditions) {
             return;
         }
-        $query = [  ];
+        $query = [];
         foreach ($conditions as $type => $condition) {
             switch (true) {
-                case $this->isProperty($type):
+                case $this->isProperty($type, $model):
                     $query = array_merge($this->parsePropertyCondition($owner, $type, $condition), $query);
                     break;
 
@@ -98,20 +107,20 @@ trait Condition
     {
 
         $column = $this->builder->normalizeCollum($property, $owner);
-        $query = [  ];
+        $query = [];
         if (is_array($condition)) {
             foreach ($condition as $op => $value) {
                 if (!$this->isOperator($op)) {
                     throw new \InvalidArgumentException("The value entered for column '$column' is not a valid operator");
                 }
 
-                $query[  ] = $this->resolverCondition($op, $value, $column);
+                $query[] = $this->resolverCondition($op, $value, $column);
             }
         } else {
             if ($this->isOperator($condition)) {
-                $query[  ] = $this->resolverCondition($condition, '', $column); #Valid only for the cause: Collumn=> Op
+                $query[] = $this->resolverCondition($condition, '', $column); #Valid only for the cause: Collumn=> Op
             } else {
-                $query[  ] = "$column = " . $this->convertValueToQuery($condition);
+                $query[] = "$column = " . $this->convertValueToQuery($condition);
             }
         }
         return $query;
@@ -120,31 +129,36 @@ trait Condition
     private function parseOperatorCondition($owner, $property, $condition)
     {
         $column = $this->builder->normalizeCollum($property, $owner);
-        $query = [  ];
+        $query = [];
 
         switch ($property) {
             case Op::AND:
                 $r = $this->processAllConditions($owner, $condition);
-                $query[  ] = "(" . implode(' AND ', $r) . ")";
+                $query[] = "(" . implode(' AND ', $r) . ")";
                 break;
 
             case Op::OR:
                 $r = $this->processAllConditions($owner, $condition);
-                $query[  ] = "(" . implode(' OR ', $r) . ")";
+                $query[] = "(" . implode(' OR ', $r) . ")";
                 break;
 
             case Op::DATE:
                 $r = $this->processAllConditions($owner, $condition);
-                $query[  ] = preg_replace('/`(.*?\.`.*?)`/', 'DATE(${0})', implode(' AND ', $r));
+                $query[] = preg_replace('/`(.*?\.`.*?)`/', 'DATE(${0})', implode(' AND ', $r));
                 break;
 
             default:
-                $query[  ] = $this->resolverCondition($property, $condition, $column);
+                $query[] = $this->resolverCondition($property, $condition, $column);
                 break;
         }
         return $query;
     }
 
+    /**
+     * @param Model|Entity|string $owner
+     * @param array $condition
+     * @return void
+     */
     public function mountConditions($owner, $condition)
     {
         if (!$condition) {
@@ -154,6 +168,11 @@ trait Condition
         $this->builder->addConditionQuery(implode(" AND ", $this->processAllConditions($owner, $condition)));
     }
 
+    /**
+     * @param Model|Entity|string $owner
+     * @param array $condition
+     * @return void
+     */
     public function mountOnConditions($owner, $condition)
     {
         if (!$condition) {
@@ -163,9 +182,15 @@ trait Condition
         $this->builder->addOnCondition(implode(" AND ", $this->processAllConditions($owner, $condition)));
     }
 
-    private function isProperty($name)
+    /**
+     * @param string $name
+     * @param Model|Entity $owner
+     * @return boolean
+     */
+    private function isProperty($name, $owner)
     {
-        $props = $this->model->getCollumns();
+        $model = !is_string($owner) ? $owner : $this->model;
+        $props = $model->getCollumns();
 
         foreach ($props as $key => $value) {
             if ($key === $name) {

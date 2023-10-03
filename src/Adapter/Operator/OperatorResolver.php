@@ -229,7 +229,7 @@ class OperatorResolver
             // ?Conditions
             if ($conditions) {
                 $this->builder->and();
-                self::mountOnConditions($model->getTablename(), $conditions);
+                self::mountOnConditions($model, $conditions);
             }
 
             // ?Attributes
