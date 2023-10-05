@@ -19,6 +19,7 @@ namespace Komodo\Interlace\Bases;
 use Error;
 use Komodo\Interlace\Adapter\Operator\OperatorResolver;
 use Komodo\Interlace\Association;
+use Komodo\Interlace\Enums\Enum;
 use Komodo\Interlace\Enums\Op;
 use Komodo\Interlace\Interfaces\Connection;
 use Komodo\Interlace\Model;
@@ -107,6 +108,41 @@ trait ModelStaticFunctions
             return [];
         }
     }
+
+
+    /**
+     * @param array{where?: Where, select?: Select, associations?: Assoc } $params
+     *
+     * @return $this|null
+     */
+    public static function findOrCreate($params)
+    {
+        try {
+            if (!$model = self::findOne($params)) {
+                $conditions = $params['where'] ?? [];
+                $defaults = $params['defaults'] ?? [];
+
+                $validConditionData = [];
+                foreach ($conditions as $key => $value) {
+                    if (Enum::isValid($key)) {
+                        continue;
+                    }
+                    $validConditionData[$key] = $value;
+                }
+
+                $data = array_merge($validConditionData, $defaults);
+                $model = self::create($data);
+            }
+
+            return $model;
+        } catch (Throwable $th) {
+            if (self::$staticLogger) {
+                self::$staticLogger->error($th->getMessage());
+            };
+            return null;
+        }
+    }
+
 
     /**
      * @param array{where?: Where, select?: Select, associations?: Assoc } $params

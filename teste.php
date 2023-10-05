@@ -26,9 +26,7 @@ foreach ($clientes as $cliente) {
     print_r($cliente->nome . PHP_EOL);
 } */
 
-$TESTE = "`date`.`ee`='sdsdsd' AND `sdsds`.`sdsd`='sdsds'";
+$arr1 = ['a' => 232];
+$arr2 = ['b' => 0];
 
-
-
-
-var_dump(preg_replace("/`(.*?\.`.*?)`/", 'DATE(${0})', $TESTE));
+var_dump(array_merge($arr1, $arr2));
