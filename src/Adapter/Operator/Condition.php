@@ -286,21 +286,32 @@ trait Condition
 
     private function convertValueToQuery($value)
     {
-        $type = gettype($value);
-        $var = '';
-        switch ($type) {
-            case 'array':
-                $var = implode(',', array_values($value));
-                break;
-            case 'object':
-                $var = implode(',', array_values((array) $value));
-                break;
-            case 'string':
-                $var = "'$value'";
-                break;
-            default:
-                $var = $value;
-                break;
+        if ($this->isOperator($value)) {
+            switch ($value) {
+                case Op::CUR_DATE:
+                    $var = Op::CUR_DATE;
+                    break;
+                default:
+                    $var = $value;
+                    break;
+            }
+        } else {
+            $type = gettype($value);
+            $var = '';
+            switch ($type) {
+                case 'array':
+                    $var = implode(',', array_values($value));
+                    break;
+                case 'object':
+                    $var = implode(',', array_values((array) $value));
+                    break;
+                case 'string':
+                    $var = "'$value'";
+                    break;
+                default:
+                    $var = $value;
+                    break;
+            }
         }
         return $var;
     }
