@@ -189,7 +189,7 @@ trait Condition
      */
     private function isProperty($name, $owner)
     {
-       
+
         $model = is_string($owner) || is_null($owner) ? $this->model : $owner;
         $props = $model->getCollumns();
 
@@ -269,6 +269,10 @@ trait Condition
             case Op::END:
                 $requireTraitValues('string');
                 $v = sprintf($op, $collunm, $value);
+                break;
+
+            case Op::CUR_DATE:
+                $v = Op::CUR_DATE;
                 break;
 
             default:
