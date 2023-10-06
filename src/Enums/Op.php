@@ -28,7 +28,7 @@ abstract class Op extends Enum
     const BETWEEN = "%s BETWEEN %s AND %s";
     const NOT_BETWEEN = "%s NOT BETWEEN '%s' AND '%s'";
 
-// #Comparation
+    // #Comparation
     const NULL = "%s IS NULL";
     const NOT_NULL = "%s IS NOT NULL";
     const IS = "%s IS %s";
@@ -41,10 +41,12 @@ abstract class Op extends Enum
     const IN = "%s IN (%s)";
     const NOT_IN = "%s NOT IN (%s)";
 
-    const OR = "%s OR %s";
-    const AND = "%s AND %s";
-    const DATE = "DATE(%s)";
+    const  OR  = "%s OR %s";
+    const  AND  = "%s AND %s";
 
+    // #Functions
+    const DATE = "DATE(%s)";
+    const CUR_DATE = "curdate()";
     const DISTINCT = "DISTINCT(%s)";
     const COUNT = "COUNT(%s)";
     const COUNT_DISTINCT = "COUNT(DISTINCT(%s))";
