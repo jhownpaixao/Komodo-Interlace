@@ -147,6 +147,11 @@ trait Condition
                 $query[] = preg_replace('/`(.*?\.`.*?)`/', 'DATE(${0})', implode(' AND ', $r));
                 break;
 
+            case Op::TIMESTAMP:
+                $r = $this->processAllConditions($owner, $condition);
+                $query[] = preg_replace('/`(.*?\.`.*?)`/', 'TIMESTAMP(${0})', implode(' AND ', $r));
+                break;
+
             default:
                 $query[] = $this->resolverCondition($property, $condition, $column);
                 break;
@@ -275,6 +280,10 @@ trait Condition
                 $v = Op::CUR_DATE;
                 break;
 
+            case Op::CURRENT_TIMESTAMP:
+                $var = Op::CURRENT_TIMESTAMP;
+                break;
+
             default:
                 $value = $this->convertValueToQuery($value);
                 $v = sprintf($op, $collunm, $value);
@@ -291,6 +300,11 @@ trait Condition
                 case Op::CUR_DATE:
                     $var = Op::CUR_DATE;
                     break;
+
+                case Op::CURRENT_TIMESTAMP:
+                    $var = Op::CURRENT_TIMESTAMP;
+                    break;
+
                 default:
                     $var = $value;
                     break;

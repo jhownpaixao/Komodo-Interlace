@@ -46,7 +46,9 @@ abstract class Op extends Enum
 
     // #Functions
     const DATE = "DATE(%s)";
+    const TIMESTAMP = "TIMESTAMP(%s)";
     const CUR_DATE = "curdate()";
+    const CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP";
     const DISTINCT = "DISTINCT(%s)";
     const COUNT = "COUNT(%s)";
     const COUNT_DISTINCT = "COUNT(DISTINCT(%s))";
